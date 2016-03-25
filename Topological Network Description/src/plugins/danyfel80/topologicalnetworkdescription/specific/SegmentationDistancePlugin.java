@@ -1,5 +1,6 @@
-package plugins.danyfel80.topologicalnetworkdescription.plugins;
+package plugins.danyfel80.topologicalnetworkdescription.specific;
 
+import algorithms.danyfel80.topologicalnetworkdescription.SegmentDistanceCalcultator;
 import icy.gui.dialog.MessageDialog;
 import icy.sequence.Sequence;
 import icy.system.profile.CPUMonitor;
@@ -8,14 +9,13 @@ import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarSequence;
-import plugins.danyfel80.topologicalnetworkdescription.classes.SegmentDistanceCalcultator;
 
 public class SegmentationDistancePlugin extends EzPlug implements Block{
 
 	private EzVarSequence inputSegmentedSequence = new EzVarSequence("Segmented Sequence");
 	private EzVarBoolean inputAddResult = new EzVarBoolean("Show Result Sequences", true);
 	
-	private EzVarSequence outputXYZDistanceSequence = new EzVarSequence("XYZ Distance Map");
+	private EzVarSequence outputDistanceSequence = new EzVarSequence("Distance Map");
 	private EzVarSequence outputSquaredDistanceSequence = new EzVarSequence("Squared Distance Map");
 	private EzVarSequence outputInvertedSquaredDistanceSequence = new EzVarSequence("Inverted Squared Distance Map");
 	
@@ -42,16 +42,16 @@ public class SegmentationDistancePlugin extends EzPlug implements Block{
 		SegmentDistanceCalcultator sdc = new SegmentDistanceCalcultator(segmentedSequence);
 		sdc.process();
 		Sequence squaredDistanceMapSequence = sdc.getSquaredDistanceMap(); 
-		Sequence distanceMapXYZSequence = sdc.getDistanceMapXYZ();
+		Sequence distanceMapSequence = sdc.getDistanceMap();
 		Sequence invertedDistanceMapSequence = sdc.getInvertedSquaredDistanceMap();
-		
 		cpu.stop();
+		System.out.println(cpu.getCPUElapsedTimeSec());
 		if(inputAddResult.getValue()) {
 			addSequence(squaredDistanceMapSequence);
-			addSequence(distanceMapXYZSequence);
+			addSequence(distanceMapSequence);
 			addSequence(invertedDistanceMapSequence);
 		}
-		outputXYZDistanceSequence.setValue(distanceMapXYZSequence);
+		outputDistanceSequence.setValue(distanceMapSequence);
 		outputSquaredDistanceSequence.setValue(squaredDistanceMapSequence);
 		outputInvertedSquaredDistanceSequence.setValue(invertedDistanceMapSequence);
 		MessageDialog.showDialog("Result Distance Map", "Distance Map Calculus Execution time : " + cpu.getCPUElapsedTimeSec() + "s.", MessageDialog.INFORMATION_MESSAGE);
@@ -69,7 +69,7 @@ public class SegmentationDistancePlugin extends EzPlug implements Block{
 
 	@Override
 	public void declareOutput(VarList outputMap) {
-		outputMap.add(outputXYZDistanceSequence.name, outputXYZDistanceSequence.getVariable());
+		outputMap.add(outputDistanceSequence.name, outputDistanceSequence.getVariable());
 		outputMap.add(outputSquaredDistanceSequence.name, outputSquaredDistanceSequence.getVariable());
 		outputMap.add(outputInvertedSquaredDistanceSequence.name, outputInvertedSquaredDistanceSequence.getVariable());
 	}

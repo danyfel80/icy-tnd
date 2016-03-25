@@ -1,5 +1,6 @@
-package plugins.danyfel80.topologicalnetworkdescription.plugins;
+package plugins.danyfel80.topologicalnetworkdescription.specific;
 
+import algorithms.danyfel80.topologicalnetworkdescription.Thresholder;
 import icy.gui.dialog.MessageDialog;
 import icy.sequence.Sequence;
 import icy.sequence.SequenceUtil;
@@ -11,7 +12,6 @@ import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarInteger;
 import plugins.adufour.ezplug.EzVarSequence;
-import plugins.danyfel80.topologicalnetworkdescription.classes.Thresholder;
 
 public class ThresholderPlugin extends EzPlug implements Block {
 	

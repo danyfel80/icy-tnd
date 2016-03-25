@@ -1,5 +1,6 @@
-package plugins.danyfel80.topologicalnetworkdescription.plugins;
+package plugins.danyfel80.topologicalnetworkdescription.specific;
 
+import algorithms.danyfel80.topologicalnetworkdescription.NetworkDescriptionConstructor;
 import icy.gui.dialog.MessageDialog;
 import icy.sequence.Sequence;
 import icy.system.profile.CPUMonitor;
@@ -9,7 +10,6 @@ import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarSequence;
 import plugins.adufour.ezplug.EzVarText;
-import plugins.danyfel80.topologicalnetworkdescription.classes.NetworkDescriptionConstructor;
 
 public class NetworkDescriptionPlugin extends EzPlug implements Block{
 

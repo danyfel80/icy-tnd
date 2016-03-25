@@ -1,15 +1,15 @@
 /**
  * 
  */
-package plugins.danyfel80.topologicalnetworkdescription.classes;
+package algorithms.danyfel80.topologicalnetworkdescription;
 
 import icy.image.IcyBufferedImage;
 import icy.sequence.Sequence;
+import icy.sequence.SequenceUtil;
 import icy.type.DataType;
 
 /**
  * @author Daniel Felipe Gonzalez Obando
- *
  */
 public class EndnessCalculator {
 
@@ -17,11 +17,16 @@ public class EndnessCalculator {
 		int sizeX = squaredDistanceMapSequence.getSizeX();
 		int sizeY = squaredDistanceMapSequence.getSizeY();
 		int sizeZ = squaredDistanceMapSequence.getSizeZ();
+		Sequence result = new Sequence(squaredDistanceMapSequence.getName() + "_Endness");
+        
+		if(!squaredDistanceMapSequence.getDataType_().equals(DataType.INT))
+		  squaredDistanceMapSequence = SequenceUtil.convertToType(squaredDistanceMapSequence, DataType.INT, false);
+		if(!costFunctionToSeedSequence.getDataType_().equals(DataType.DOUBLE))
+		  costFunctionToSeedSequence = SequenceUtil.convertToType(costFunctionToSeedSequence, DataType.DOUBLE, false);
 		
 		int[][][] distanceData = squaredDistanceMapSequence.getDataXYCZAsInt(0);
 		double[][][] costData = costFunctionToSeedSequence.getDataXYCZAsDouble(0);
 		
-		Sequence result = new Sequence(squaredDistanceMapSequence.getName() + "_Endness");
 		result.beginUpdate();
 		try {
 			for (int z = 0; z < sizeZ; z++) {

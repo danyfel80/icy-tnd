@@ -1,7 +1,8 @@
-package plugins.danyfel80.topologicalnetworkdescription.plugins;
+package plugins.danyfel80.topologicalnetworkdescription.specific;
 
 import java.util.List;
 
+import algorithms.danyfel80.topologicalnetworkdescription.RegionGrowingSegmenter;
 import icy.gui.dialog.MessageDialog;
 import icy.roi.ROI;
 import icy.sequence.Sequence;
@@ -11,7 +12,6 @@ import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarSequence;
-import plugins.danyfel80.topologicalnetworkdescription.classes.RegionGrowingSegmenter;
 import plugins.kernel.roi.roi2d.ROI2DPoint;
 
 public class RegionGrowingSegmentationPlugin extends EzPlug implements Block{

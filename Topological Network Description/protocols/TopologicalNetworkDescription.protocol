@@ -1,11 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <protocol VERSION="4">
 <blocks>
-<block ID="1215018903" blockType="plugins.danyfel80.topologicalnetworkdescription.plugins.ThresholderPlugin" className="plugins.danyfel80.topologicalnetworkdescription.plugins.ThresholderPlugin" collapsed="false" definedName="Thresholder plugin" height="132" keepsResults="true" width="315" xLocation="25" yLocation="5">
+<block ID="381089216" blockType="plugins.adufour.filtering.GaussianFilter" className="plugins.adufour.filtering.FilterToolbox" collapsed="false" definedName="Gaussian filter" height="170" keepsResults="true" width="320" xLocation="5" yLocation="0">
 <variables>
 <input>
-<variable ID="Input Sequence" name="Input Sequence" runtime="false" value="Active Sequence" visible="true"/>
-<variable ID="Threshold" name="Threshold" runtime="false" value="3000" visible="true"/>
+<variable ID="input" name="input" runtime="false" visible="true"/>
+<variable ID="filterX" name="sigma (x)" runtime="false" value="2.0" visible="true"/>
+<variable ID="filterY" name="sigma (y)" runtime="false" value="2.0" visible="true"/>
+<variable ID="filterZ" name="sigma (z)" runtime="false" value="2.0" visible="true"/>
+</input>
+<output>
+<variable ID="output" name="output" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="783480924" blockType="plugins.adufour.blocks.tools.roi.GetROIFromSequence" className="plugins.adufour.blocks.tools.roi.GetROIFromSequence" collapsed="false" definedName="Get ROI from sequence" height="107" keepsResults="true" width="327" xLocation="415" yLocation="0">
+<variables>
+<input>
+<variable ID="input sequence" name="Source" runtime="false" visible="true"/>
+<variable ID="selection state of ROI to extract" name="ROI to get" runtime="false" value="ALL" visible="true"/>
+</input>
+<output>
+<variable ID="extracted rois" name="List of ROI" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="939452149" blockType="plugins.tprovoost.sequenceblocks.add.AddRois" className="plugins.tprovoost.sequenceblocks.SequenceBlocks" collapsed="false" definedName="Add rois" height="83" keepsResults="true" width="329" xLocation="419" yLocation="119">
+<variables>
+<input>
+<variable ID="sequence" name="Sequence" runtime="false" visible="true"/>
+<variable ID="rois(s)" name="Roi(s)" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+<block ID="358340610" blockType="plugins.adufour.blocks.tools.sequence.ShowSequence" className="plugins.adufour.blocks.tools.sequence.ShowSequence" collapsed="false" definedName="Show sequence" height="61" keepsResults="true" width="328" xLocation="225" yLocation="212">
+<variables>
+<input>
+<variable ID="sequence" name="sequence" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+<block ID="1674980924" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.ThresholderPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.ThresholderPlugin" collapsed="false" definedName="Thresholder plugin" height="141" keepsResults="true" width="296" xLocation="24" yLocation="287">
+<variables>
+<input>
+<variable ID="Input Sequence" name="Input Sequence" runtime="false" visible="true"/>
+<variable ID="Threshold" name="Threshold" runtime="false" value="10" visible="true"/>
 <variable ID="Show Result Sequence" name="Show Result Sequence" runtime="false" value="true" visible="true"/>
 </input>
 <output>
@@ -13,32 +54,32 @@
 </output>
 </variables>
 </block>
-<block ID="28298131" blockType="plugins.danyfel80.topologicalnetworkdescription.plugins.RegionGrowingSegmentationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.plugins.RegionGrowingSegmentationPlugin" collapsed="false" definedName="Region growing segmentation plugin" height="129" keepsResults="true" width="316" xLocation="360" yLocation="5">
+<block ID="2008441520" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.RegionGrowingSegmentationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.RegionGrowingSegmentationPlugin" collapsed="false" definedName="Region growing segmentation plugin" height="134" keepsResults="true" width="408" xLocation="481" yLocation="300">
 <variables>
 <input>
 <variable ID="Original Sequence" name="Original Sequence" runtime="false" visible="true"/>
 <variable ID="Thresholded Sequence" name="Thresholded Sequence" runtime="false" visible="true"/>
-<variable ID="Show Result Sequence" name="Show Result Sequence" runtime="false" value="true" visible="true"/>
+<variable ID="Show Result Sequence" name="Show Result Sequence" runtime="false" visible="true"/>
 </input>
 <output>
 <variable ID="Segmented Sequence" name="Segmented Sequence" runtime="false" visible="true"/>
 </output>
 </variables>
 </block>
-<block ID="1308966429" blockType="plugins.danyfel80.topologicalnetworkdescription.plugins.SegmentationDistancePlugin" className="plugins.danyfel80.topologicalnetworkdescription.plugins.SegmentationDistancePlugin" collapsed="false" definedName="Segmentation distance plugin" height="151" keepsResults="true" width="323" xLocation="761" yLocation="6">
+<block ID="1010881022" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.SegmentationDistancePlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.SegmentationDistancePlugin" collapsed="false" definedName="Segmentation distance plugin" height="156" keepsResults="true" width="417" xLocation="20" yLocation="456">
 <variables>
 <input>
 <variable ID="Segmented Sequence" name="Segmented Sequence" runtime="false" visible="true"/>
 <variable ID="Show Result Sequences" name="Show Result Sequences" runtime="false" visible="true"/>
 </input>
 <output>
-<variable ID="XYZ Distance Map" name="XYZ Distance Map" runtime="false" visible="true"/>
+<variable ID="Distance Map" name="Distance Map" runtime="false" visible="true"/>
 <variable ID="Squared Distance Map" name="Squared Distance Map" runtime="false" visible="true"/>
 <variable ID="Inverted Squared Distance Map" name="Inverted Squared Distance Map" runtime="false" visible="true"/>
 </output>
 </variables>
 </block>
-<block ID="904329176" blockType="plugins.danyfel80.topologicalnetworkdescription.plugins.CostToSeedPlugin" className="plugins.danyfel80.topologicalnetworkdescription.plugins.CostToSeedPlugin" collapsed="false" definedName="Cost to seed plugin" height="151" keepsResults="true" width="320" xLocation="21" yLocation="167">
+<block ID="2047426829" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedPlugin" collapsed="false" definedName="Cost to seed plugin" height="156" keepsResults="true" width="417" xLocation="479" yLocation="460">
 <variables>
 <input>
 <variable ID="Original Sequence" name="Original Sequence" runtime="false" visible="true"/>
@@ -51,7 +92,7 @@
 </output>
 </variables>
 </block>
-<block ID="617046972" blockType="plugins.danyfel80.topologicalnetworkdescription.plugins.SegmentationEndnessPlugin" className="plugins.danyfel80.topologicalnetworkdescription.plugins.SegmentationEndnessPlugin" collapsed="false" definedName="Segmentation endness plugin" height="129" keepsResults="true" width="320" xLocation="375" yLocation="167">
+<block ID="1348112690" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.SegmentationEndnessPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.SegmentationEndnessPlugin" collapsed="false" definedName="Segmentation endness plugin" height="134" keepsResults="true" width="417" xLocation="21" yLocation="645">
 <variables>
 <input>
 <variable ID="Cost To Seed" name="Cost To Seed" runtime="false" visible="true"/>
@@ -63,7 +104,7 @@
 </output>
 </variables>
 </block>
-<block ID="1246982608" blockType="plugins.danyfel80.topologicalnetworkdescription.plugins.NetworkDescriptionPlugin" className="plugins.danyfel80.topologicalnetworkdescription.plugins.NetworkDescriptionPlugin" collapsed="false" definedName="Network description plugin" height="264" keepsResults="true" width="286" xLocation="763" yLocation="242">
+<block ID="1893728517" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.NetworkDescriptionPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.NetworkDescriptionPlugin" collapsed="false" definedName="Network description plugin" height="266" keepsResults="true" width="420" xLocation="481" yLocation="642">
 <variables>
 <input>
 <variable ID="Minimum Spanning Tree" name="Minimum Spanning Tree" runtime="false" visible="true"/>
@@ -83,19 +124,25 @@
 </block>
 </blocks>
 <links>
-<link dstBlockID="1308966429" dstVarID="Show Result Sequences" srcBlockID="28298131" srcVarID="Show Result Sequence"/>
-<link dstBlockID="1308966429" dstVarID="Segmented Sequence" srcBlockID="28298131" srcVarID="Segmented Sequence"/>
-<link dstBlockID="904329176" dstVarID="Original Sequence" srcBlockID="28298131" srcVarID="Original Sequence"/>
-<link dstBlockID="904329176" dstVarID="Inverted Distance Map" srcBlockID="1308966429" srcVarID="Inverted Squared Distance Map"/>
-<link dstBlockID="617046972" dstVarID="Squared Distance Map" srcBlockID="1308966429" srcVarID="Squared Distance Map"/>
-<link dstBlockID="904329176" dstVarID="Show Result Sequences" srcBlockID="1308966429" srcVarID="Show Result Sequences"/>
-<link dstBlockID="617046972" dstVarID="Cost To Seed" srcBlockID="904329176" srcVarID="Cost To Seed"/>
-<link dstBlockID="617046972" dstVarID="Show Result Sequences" srcBlockID="904329176" srcVarID="Show Result Sequences"/>
-<link dstBlockID="1246982608" dstVarID="Minimum Spanning Tree" srcBlockID="904329176" srcVarID="Minimum Spanning Tree"/>
-<link dstBlockID="1246982608" dstVarID="Show Result Sequences" srcBlockID="617046972" srcVarID="Show Result Sequences"/>
-<link dstBlockID="1246982608" dstVarID="Endness Map" srcBlockID="617046972" srcVarID="Endness Map"/>
-<link dstBlockID="1246982608" dstVarID="Squared Distance Map" srcBlockID="617046972" srcVarID="Squared Distance Map"/>
-<link dstBlockID="28298131" dstVarID="Original Sequence" srcBlockID="1215018903" srcVarID="Input Sequence"/>
-<link dstBlockID="28298131" dstVarID="Thresholded Sequence" srcBlockID="1215018903" srcVarID="Thresholded Sequence"/>
+<link dstBlockID="1010881022" dstVarID="Segmented Sequence" srcBlockID="2008441520" srcVarID="Segmented Sequence"/>
+<link dstBlockID="2047426829" dstVarID="Inverted Distance Map" srcBlockID="1010881022" srcVarID="Inverted Squared Distance Map"/>
+<link dstBlockID="1348112690" dstVarID="Squared Distance Map" srcBlockID="1010881022" srcVarID="Squared Distance Map"/>
+<link dstBlockID="1893728517" dstVarID="Squared Distance Map" srcBlockID="1010881022" srcVarID="Squared Distance Map"/>
+<link dstBlockID="1348112690" dstVarID="Cost To Seed" srcBlockID="2047426829" srcVarID="Cost To Seed"/>
+<link dstBlockID="1893728517" dstVarID="Minimum Spanning Tree" srcBlockID="2047426829" srcVarID="Minimum Spanning Tree"/>
+<link dstBlockID="1893728517" dstVarID="Endness Map" srcBlockID="1348112690" srcVarID="Endness Map"/>
+<link dstBlockID="2008441520" dstVarID="Thresholded Sequence" srcBlockID="1674980924" srcVarID="Thresholded Sequence"/>
+<link dstBlockID="783480924" dstVarID="input sequence" srcBlockID="381089216" srcVarID="input"/>
+<link dstBlockID="939452149" dstVarID="sequence" srcBlockID="381089216" srcVarID="output"/>
+<link dstBlockID="939452149" dstVarID="rois(s)" srcBlockID="783480924" srcVarID="extracted rois"/>
+<link dstBlockID="2008441520" dstVarID="Show Result Sequence" srcBlockID="1674980924" srcVarID="Show Result Sequence"/>
+<link dstBlockID="1010881022" dstVarID="Show Result Sequences" srcBlockID="2008441520" srcVarID="Show Result Sequence"/>
+<link dstBlockID="2047426829" dstVarID="Show Result Sequences" srcBlockID="1010881022" srcVarID="Show Result Sequences"/>
+<link dstBlockID="1348112690" dstVarID="Show Result Sequences" srcBlockID="2047426829" srcVarID="Show Result Sequences"/>
+<link dstBlockID="1893728517" dstVarID="Show Result Sequences" srcBlockID="1348112690" srcVarID="Show Result Sequences"/>
+<link dstBlockID="2047426829" dstVarID="Original Sequence" srcBlockID="381089216" srcVarID="output"/>
+<link dstBlockID="358340610" dstVarID="sequence" srcBlockID="939452149" srcVarID="sequence"/>
+<link dstBlockID="1674980924" dstVarID="Input Sequence" srcBlockID="358340610" srcVarID="sequence"/>
+<link dstBlockID="2008441520" dstVarID="Original Sequence" srcBlockID="358340610" srcVarID="sequence"/>
 </links>
 </protocol>

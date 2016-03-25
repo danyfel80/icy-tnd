@@ -1,5 +1,6 @@
-package plugins.danyfel80.topologicalnetworkdescription.plugins;
+package plugins.danyfel80.topologicalnetworkdescription.specific;
 
+import algorithms.danyfel80.topologicalnetworkdescription.EndnessCalculator;
 import icy.gui.dialog.MessageDialog;
 import icy.sequence.Sequence;
 import icy.system.profile.CPUMonitor;
@@ -8,7 +9,6 @@ import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarSequence;
-import plugins.danyfel80.topologicalnetworkdescription.classes.EndnessCalculator;
 
 public class SegmentationEndnessPlugin extends EzPlug implements Block{
 
