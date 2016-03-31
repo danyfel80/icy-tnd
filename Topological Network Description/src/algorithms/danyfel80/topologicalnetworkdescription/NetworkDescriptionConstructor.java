@@ -3,7 +3,11 @@
  */
 package algorithms.danyfel80.topologicalnetworkdescription;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import javax.vecmath.Point3i;
 
@@ -58,6 +62,7 @@ public class NetworkDescriptionConstructor {
   private Sequence skeletonSequence;
   private Sequence labeledSkeletonSequence;
   private DirectedGraph<Point3i, DefaultEdge> graph;
+  private Set<Point3i> seeds;
 
   public NetworkDescriptionConstructor(Sequence endnessSequence, Sequence minimumSpaningTree, Sequence squaredDistanceMap) {
     this.endnessSequence = endnessSequence;
@@ -73,19 +78,19 @@ public class NetworkDescriptionConstructor {
   }
 
   public Sequence process() {
-    
+
     labelSequence = new Sequence(minimumSpanningTree.getName() + "_Labels");
     endPointSequence = new Sequence(minimumSpanningTree.getName() + "_EndPoints");
     branchSequence = new Sequence(minimumSpanningTree.getName() + "_Branches");
     skeletonSequence = new Sequence(minimumSpanningTree.getName() + "_Skeleton");
-    
+
     if (!endnessSequence.getDataType_().equals(DataType.DOUBLE))
       SequenceUtil.convertToType(endnessSequence, DataType.DOUBLE, false);
     if (!minimumSpanningTree.getDataType_().equals(DataType.INT))
       SequenceUtil.convertToType(minimumSpanningTree, DataType.INT, false);
     if (!distanceMap.getDataType_().equals(DataType.INT))
       SequenceUtil.convertToType(distanceMap, DataType.INT, false);
-    
+
     double[][][] endnessData = endnessSequence.getDataXYCZAsDouble(0);
     int[][][] parentData = minimumSpanningTree.getDataXYCZAsInt(0);
     int[][][] distanceData = distanceMap.getDataXYCZAsInt(0);
@@ -134,11 +139,11 @@ public class NetworkDescriptionConstructor {
     byte[][][] endPointData = endPointSequence.getDataXYCZAsByte(0);
     byte[][][] branchData = branchSequence.getDataXYCZAsByte(0);
     byte[][][] skeletonData = skeletonSequence.getDataXYCZAsByte(0);
-    
+
     int branchId = 1;
-    
+
     while (!q.isEmpty()) {
-      
+
       CostElement ce = q.remove();
       int ceX = (int)ce.getPoint().getX();
       int ceY = (int)ce.getPoint().getY();
@@ -146,10 +151,10 @@ public class NetworkDescriptionConstructor {
 
       if (labelData[ceZ][0][ceX+ceY*sizeX] == 0) {
         //Treat not marked element ce
-        
+
         // Mark neighbor sphere
         markPoint(labelData, distanceData, sizeX, sizeY, sizeZ, ceX, ceY, ceZ, branchId);
-        
+
         endPointData[ceZ][0][ceX+ceY*sizeX] = (byte)DataType.UBYTE.getMaxValue();
         skeletonData[ceZ][0][ceX+ceY*sizeX] = (byte)DataType.UBYTE.getMaxValue();
 
@@ -170,7 +175,7 @@ public class NetworkDescriptionConstructor {
               labelData[ceZ][0][ceX+ceY*sizeX] = branchId;
               // Mark neighbor sphere
               markPoint(labelData, distanceData, sizeX, sizeY, sizeZ, ceX, ceY, ceZ, branchId);
-              
+
               skeletonData[ceZ][0][ceX+ceY*sizeX] = (byte)DataType.UBYTE.getMaxValue();
             }
             else {
@@ -184,7 +189,7 @@ public class NetworkDescriptionConstructor {
               labelData[ceZ][0][ceX+ceY*sizeX] = branchId;
               // mark neighbor sphere
               markPoint(labelData, distanceData, sizeX, sizeY, sizeZ, ceX, ceY, ceZ, branchId);
-              
+
             }
             else {
               branchId++;
@@ -208,8 +213,8 @@ public class NetworkDescriptionConstructor {
   private void markPoint(int[][][] labelData, int[][][] distanceData, int sizeX, int sizeY, int sizeZ, int ceX, int ceY, int ceZ,
       int branchId) {
 
-    double rSize = 1.5;
-    
+    double rSize = 2.5;
+
     int rs = (int) Math.ceil(Math.sqrt((distanceData[ceZ][0][ceX+ceY*sizeX] > 4)? distanceData[ceZ][0][ceX+ceY*sizeX]: 4)*rSize);
     rs*=rs;
     int r = (int) Math.ceil(Math.sqrt(rs));
@@ -316,6 +321,7 @@ public class NetworkDescriptionConstructor {
     int sizeY = endPointSequence.getSizeY();
     int sizeZ = endPointSequence.getSizeZ();
 
+    seeds = new HashSet<Point3i>();
 
     for (int z = 0; z < sizeZ; z++) {
       for (int x = 0; x < sizeX; x++) {
@@ -342,11 +348,17 @@ public class NetworkDescriptionConstructor {
               ppz = mstData[p.z][2][p.x+ p.y*sizeX];
               pp = new Point3i(ppx, ppy, ppz);
             }
+            seeds.add(p);
+
           }
         }
       }
     }
 
     return this.graph;
+  }
+
+  public List<Point3i> getSeedPoints() {
+    return new ArrayList<Point3i>(seeds);
   }
 }
