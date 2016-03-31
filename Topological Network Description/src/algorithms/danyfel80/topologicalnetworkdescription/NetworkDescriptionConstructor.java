@@ -139,7 +139,7 @@ public class NetworkDescriptionConstructor {
     
     while (!q.isEmpty()) {
       
-      CostElement ce = q.poll();
+      CostElement ce = q.remove();
       int ceX = (int)ce.getPoint().getX();
       int ceY = (int)ce.getPoint().getY();
       int ceZ = (int)ce.getPoint().getZ();
@@ -208,7 +208,7 @@ public class NetworkDescriptionConstructor {
   private void markPoint(int[][][] labelData, int[][][] distanceData, int sizeX, int sizeY, int sizeZ, int ceX, int ceY, int ceZ,
       int branchId) {
 
-    double rSize = 2.5;
+    double rSize = 1.5;
     
     int rs = (int) Math.ceil(Math.sqrt((distanceData[ceZ][0][ceX+ceY*sizeX] > 4)? distanceData[ceZ][0][ceX+ceY*sizeX]: 4)*rSize);
     rs*=rs;
@@ -217,29 +217,29 @@ public class NetworkDescriptionConstructor {
       for (int y = 0; y <= r; y++) {
         for (int z = 0; z <= r; z++) {
           if (x*x+y*y+z*z <= rs) {
-            if (ceX+x < sizeX && ceY+y < sizeY && ceZ+z < sizeZ /*&&
-                labelData[ceZ+z][0][ceX+x+(ceY+y)*sizeX] == 0*/)
+            if (ceX+x < sizeX && ceY+y < sizeY && ceZ+z < sizeZ &&
+                labelData[ceZ+z][0][ceX+x+(ceY+y)*sizeX] == 0)
               labelData[ceZ+z][0][ceX+x+(ceY+y)*sizeX] = branchId;
-            if (ceX+x < sizeX && ceY-y >= 0 && ceZ+z < sizeZ /*&&
-                labelData[ceZ+z][0][ceX+x+(ceY-y)*sizeX] == 0*/)
+            if (ceX+x < sizeX && ceY-y >= 0 && ceZ+z < sizeZ &&
+                labelData[ceZ+z][0][ceX+x+(ceY-y)*sizeX] == 0)
               labelData[ceZ+z][0][ceX+x+(ceY-y)*sizeX] = branchId;
-            if (ceX-x >= 0 && ceY+y < sizeY && ceZ+z < sizeZ /*&&
-                labelData[ceZ+z][0][ceX-x+(ceY+y)*sizeX] == 0*/)
+            if (ceX-x >= 0 && ceY+y < sizeY && ceZ+z < sizeZ &&
+                labelData[ceZ+z][0][ceX-x+(ceY+y)*sizeX] == 0)
               labelData[ceZ+z][0][ceX-x+(ceY+y)*sizeX] = branchId;
-            if (ceX-x >= 0 && ceY-y >= 0 && ceZ+z < sizeZ /*&&
-                labelData[ceZ+z][0][ceX-x+(ceY-y)*sizeX] == 0*/)
+            if (ceX-x >= 0 && ceY-y >= 0 && ceZ+z < sizeZ &&
+                labelData[ceZ+z][0][ceX-x+(ceY-y)*sizeX] == 0)
               labelData[ceZ+z][0][ceX-x+(ceY-y)*sizeX] = branchId;
-            if (ceX+x < sizeX && ceY+y < sizeY && ceZ-z >= 0 /*&&
-                labelData[ceZ-z][0][ceX+x+(ceY+y)*sizeX] == 0*/)
+            if (ceX+x < sizeX && ceY+y < sizeY && ceZ-z >= 0 &&
+                labelData[ceZ-z][0][ceX+x+(ceY+y)*sizeX] == 0)
               labelData[ceZ-z][0][ceX+x+(ceY+y)*sizeX] = branchId;
-            if (ceX+x < sizeX && ceY-y >= 0 && ceZ-z >= 0 /*&&
-                labelData[ceZ-z][0][ceX+x+(ceY-y)*sizeX] == 0*/)
+            if (ceX+x < sizeX && ceY-y >= 0 && ceZ-z >= 0 &&
+                labelData[ceZ-z][0][ceX+x+(ceY-y)*sizeX] == 0)
               labelData[ceZ-z][0][ceX+x+(ceY-y)*sizeX] = branchId;
-            if (ceX-x >= 0 && ceY+y < sizeY && ceZ-z >= 0 /*&&
-                labelData[ceZ-z][0][ceX-x+(ceY+y)*sizeX] == 0*/)
+            if (ceX-x >= 0 && ceY+y < sizeY && ceZ-z >= 0 &&
+                labelData[ceZ-z][0][ceX-x+(ceY+y)*sizeX] == 0)
               labelData[ceZ-z][0][ceX-x+(ceY+y)*sizeX] = branchId;
-            if (ceX-x >= 0 && ceY-y >= 0 && ceZ-z >= 0 /*&&
-                labelData[ceZ-z][0][ceX-x+(ceY-y)*sizeX] == 0*/)
+            if (ceX-x >= 0 && ceY-y >= 0 && ceZ-z >= 0 &&
+                labelData[ceZ-z][0][ceX-x+(ceY-y)*sizeX] == 0)
               labelData[ceZ-z][0][ceX-x+(ceY-y)*sizeX] = branchId;
           }
         }
