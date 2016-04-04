@@ -3,6 +3,7 @@
  */
 package plugins.danyfel80.topologicalnetworkdescription.overlays;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +51,13 @@ public class Forest3DOverlay extends Overlay implements VtkPainter {
     // Set lines
     
     vtkCellArray edges = new vtkCellArray();
+    // TODO fix coloring... VTK breaks
     vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
     colors.SetNumberOfComponents(3);
+    colors.SetNumberOfTuples(graph.edgeSet().size());
+    final byte[] colorData = new byte[graph.edgeSet().size() * 3];
+    
+    int edgeI = 0;
     for (DefaultEdge e : graph.edgeSet()) {
       vtkLine line = new vtkLine();
       Point3i pS = graph.getEdgeSource(e);
@@ -61,9 +67,18 @@ public class Forest3DOverlay extends Overlay implements VtkPainter {
       line.GetPointIds().SetId(1, vertexIds.get(pT));
 
       edges.InsertNextCell(line);
-      colors.InsertNextTuple3(Random.nextInt(256),Random.nextInt(256),Random.nextInt(256));
+      Color c = new Color(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256));
+      final byte r =  (byte) c.getRed();
+      final byte g =  (byte) c.getGreen();
+      final byte b =  (byte) c.getBlue();
+      
+      colorData[edgeI*3 + 0] = r;
+      colorData[edgeI*3 + 1] = g;
+      colorData[edgeI*3 + 2] = b;
+      //colors.InsertNextTuple3(Random.nextInt(256),Random.nextInt(256),Random.nextInt(256));
+      edgeI++;
     }
-
+    
     // Create poly data
     final vtkPolyData polyData = new vtkPolyData();
     // set vertex to the poly
@@ -73,6 +88,8 @@ public class Forest3DOverlay extends Overlay implements VtkPainter {
     // set lines colors 
     polyData.GetCellData().SetScalars(colors);
     
+    colors.SetJavaArray(colorData);
+    colors.Modified();
     
     // add actor to the renderer
     final vtkPolyDataMapper polyMapper = new vtkPolyDataMapper();
