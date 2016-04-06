@@ -14,16 +14,18 @@ import plugins.adufour.blocks.lang.Block;
 import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
+import plugins.adufour.ezplug.EzVarInteger;
 import plugins.adufour.ezplug.EzVarSequence;
 import plugins.adufour.vars.lang.Var;
 import plugins.danyfel80.topologicalnetworkdescription.overlays.Forest3DOverlay;
 
 public class NetworkDescriptionPlugin extends EzPlug implements Block{
 
-  private EzVarSequence inputOriginalSequence = new EzVarSequence("Original Sequence");
+  private EzVarSequence inputOriginalSequence = new EzVarSequence("Sequence with seeds(ROIs)");
   private EzVarSequence inputEndnessSequence = new EzVarSequence("Endness Map");
   private EzVarSequence inputMinimumSpanningTreeMapSequence = new EzVarSequence("Minimum Spanning Tree");
   private EzVarSequence inputSquaredDistanceMapSequence = new EzVarSequence("Squared Distance Map");
+  private EzVarInteger inputMinRadius = new EzVarInteger("Minimum labeling radius");
   private EzVarBoolean inputAddResult = new EzVarBoolean("Show Result Sequences", true);
 
   private EzVarSequence outputBranchesSequence = new EzVarSequence("Network Branch Points");
@@ -35,10 +37,13 @@ public class NetworkDescriptionPlugin extends EzPlug implements Block{
 
   @Override
   protected void initialize() {
+    inputMinRadius.setValue(4);
+    inputMinRadius.setMinValue(2);
     addEzComponent(inputOriginalSequence);
     addEzComponent(inputEndnessSequence);
     addEzComponent(inputMinimumSpanningTreeMapSequence);
     addEzComponent(inputSquaredDistanceMapSequence);
+    addEzComponent(inputMinRadius);
     addEzComponent(inputAddResult);
   }
 
@@ -59,7 +64,7 @@ public class NetworkDescriptionPlugin extends EzPlug implements Block{
     cpu.start();
 
     // Get sequence description graph
-    NetworkDescriptionConstructor ndc = new NetworkDescriptionConstructor(endnessMapSequence, minimumSpanningTreeMapSequence, distanceMapSequence);
+    NetworkDescriptionConstructor ndc = new NetworkDescriptionConstructor(endnessMapSequence, minimumSpanningTreeMapSequence, distanceMapSequence, inputMinRadius.getValue());
     Sequence skeletonSequence = ndc.process(); // skeleton
     Sequence labelsSequence = ndc.getLabelSequence();
     Sequence branchSequence = ndc.getBranchSequence();
@@ -76,8 +81,13 @@ public class NetworkDescriptionPlugin extends EzPlug implements Block{
 
       
     }
-    Forest3DOverlay fol = new Forest3DOverlay("3D Forest", ndc.getGraph(), ndc.getSeedPoints());
-    inputOriginalSequence.getValue().addOverlay(fol);
+    if (inputOriginalSequence.getValue().getSizeZ() > 1) {
+      Forest3DOverlay fol = new Forest3DOverlay("3D Forest", ndc.getGraph(), ndc.getSeedPoints());
+      inputOriginalSequence.getValue().addOverlay(fol);
+    } else {
+      // TODO add roi in 2D 
+      //inputOriginalSequence.getValue().addROIs(ndc.getTreeROI(), true)
+    }
     addSequence(inputOriginalSequence.getValue());
     outputSkeletonSequence.setValue(skeletonSequence);
     outputBranchesSequence.setValue(branchSequence);
@@ -96,10 +106,12 @@ public class NetworkDescriptionPlugin extends EzPlug implements Block{
 
   @Override
   public void declareInput(VarList inputMap) {
+    inputMinRadius.setValue(4);
     inputMap.add(inputOriginalSequence.name, inputOriginalSequence.getVariable());
     inputMap.add(inputMinimumSpanningTreeMapSequence.name, inputMinimumSpanningTreeMapSequence.getVariable());
     inputMap.add(inputEndnessSequence.name, inputEndnessSequence.getVariable());
     inputMap.add(inputSquaredDistanceMapSequence.name, inputSquaredDistanceMapSequence.getVariable());
+    inputMap.add(inputMinRadius.name, inputMinRadius.getVariable());
     inputMap.add(inputAddResult.name, inputAddResult.getVariable());
   }
 

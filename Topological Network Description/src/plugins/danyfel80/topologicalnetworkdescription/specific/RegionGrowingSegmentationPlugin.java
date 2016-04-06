@@ -17,7 +17,7 @@ import plugins.kernel.roi.roi2d.ROI2DPoint;
 public class RegionGrowingSegmentationPlugin extends EzPlug implements Block{
 
   private EzVarSequence inputThresholdedSequence = new EzVarSequence("Thresholded Sequence");
-  private EzVarSequence inputSequence = new EzVarSequence("Original Sequence");
+  private EzVarSequence inputSequence = new EzVarSequence("Sequence with seeds(ROIs)");
   private EzVarBoolean inputAddResult = new EzVarBoolean("Show Result Sequence", true);
 
   private EzVarSequence outputSequence = new EzVarSequence("Segmented Sequence");

@@ -64,7 +64,13 @@ public class NetworkDescriptionConstructor {
   private DirectedGraph<Point3i, DefaultEdge> graph;
   private Set<Point3i> seeds;
 
-  public NetworkDescriptionConstructor(Sequence endnessSequence, Sequence minimumSpaningTree, Sequence squaredDistanceMap) {
+  private int minLabelingSphereRadius;
+
+  public NetworkDescriptionConstructor(
+      Sequence endnessSequence, 
+      Sequence minimumSpaningTree, 
+      Sequence squaredDistanceMap,
+      int minLabelingSphereRadius) {
     this.endnessSequence = endnessSequence;
     this.minimumSpanningTree = minimumSpaningTree;
     this.distanceMap = squaredDistanceMap;
@@ -76,7 +82,10 @@ public class NetworkDescriptionConstructor {
 
     this.graph = null;
   }
-
+  
+  /**
+   * @return skeleton.
+   */
   public Sequence process() {
 
     labelSequence = new Sequence(minimumSpanningTree.getName() + "_Labels");
@@ -101,12 +110,14 @@ public class NetworkDescriptionConstructor {
     PriorityQueue<CostElement> q = new PriorityQueue<>();
 
     // Fill queue
+    Point5D point;
+    CostElement ce;
     for (int z = 0; z < sizeZ; z++) {
       for (int x = 0; x < sizeX; x++) {
         for (int y = 0; y < sizeY; y++) {
           if (endnessData[z][0][x+y*sizeX] > 0) {
-            Point5D point = new Point5D.Double(x, y, z, 0, 0);
-            CostElement ce = new CostElement(endnessData[z][0][x+y*sizeX], point);
+            point = new Point5D.Double(x, y, z, 0, 0);
+            ce = new CostElement(endnessData[z][0][x+y*sizeX], point);
             q.add(ce);
           }
         }
@@ -142,12 +153,14 @@ public class NetworkDescriptionConstructor {
 
     int branchId = 1;
 
+    int ceX, ceY, ceZ, pX, pY, pZ;
+    
     while (!q.isEmpty()) {
 
-      CostElement ce = q.remove();
-      int ceX = (int)ce.getPoint().getX();
-      int ceY = (int)ce.getPoint().getY();
-      int ceZ = (int)ce.getPoint().getZ();
+      ce = q.remove();
+      ceX = (int)ce.getPoint().getX();
+      ceY = (int)ce.getPoint().getY();
+      ceZ = (int)ce.getPoint().getZ();
 
       if (labelData[ceZ][0][ceX+ceY*sizeX] == 0) {
         //Treat not marked element ce
@@ -159,9 +172,9 @@ public class NetworkDescriptionConstructor {
         skeletonData[ceZ][0][ceX+ceY*sizeX] = (byte)DataType.UBYTE.getMaxValue();
 
         boolean addNewPoints = true;
-        int pX = parentData[ceZ][0][ceX+ceY*sizeX];
-        int pY = parentData[ceZ][1][ceX+ceY*sizeX];
-        int pZ = parentData[ceZ][2][ceX+ceY*sizeX];
+        pX = parentData[ceZ][0][ceX+ceY*sizeX];
+        pY = parentData[ceZ][1][ceX+ceY*sizeX];
+        pZ = parentData[ceZ][2][ceX+ceY*sizeX];
         do {
           ceX = pX;
           ceY = pY;
@@ -210,42 +223,63 @@ public class NetworkDescriptionConstructor {
     return skeletonSequence;
   }
 
-  private void markPoint(int[][][] labelData, int[][][] distanceData, int sizeX, int sizeY, int sizeZ, int ceX, int ceY, int ceZ,
+  /**
+   * Creates a sphere with value branchId in the labelData of a radius equal to
+   * the value in distanceData at pX, pY, pZ. 
+   * @param labelData
+   * @param distanceData
+   * @param sX
+   * @param sY
+   * @param sZ
+   * @param pX
+   * @param pY
+   * @param pZ
+   * @param branchId
+   */
+  private void markPoint(int[][][] labelData, int[][][] distanceData, int sX, int sY, int sZ, int pX, int pY, int pZ,
       int branchId) {
+    
+    int x, y, z, r, rs, x2, y2;
+    
+    double rScale = 2.5;
 
-    double rSize = 2.5;
-
-    int rs = (int) Math.ceil(Math.sqrt((distanceData[ceZ][0][ceX+ceY*sizeX] > 4)? distanceData[ceZ][0][ceX+ceY*sizeX]: 4)*rSize);
-    rs*=rs;
-    int r = (int) Math.ceil(Math.sqrt(rs));
-    for (int x = 0; x <= r; x++) {
-      for (int y = 0; y <= r; y++) {
-        for (int z = 0; z <= r; z++) {
-          if (x*x+y*y+z*z <= rs) {
-            if (ceX+x < sizeX && ceY+y < sizeY && ceZ+z < sizeZ &&
-                labelData[ceZ+z][0][ceX+x+(ceY+y)*sizeX] == 0)
-              labelData[ceZ+z][0][ceX+x+(ceY+y)*sizeX] = branchId;
-            if (ceX+x < sizeX && ceY-y >= 0 && ceZ+z < sizeZ &&
-                labelData[ceZ+z][0][ceX+x+(ceY-y)*sizeX] == 0)
-              labelData[ceZ+z][0][ceX+x+(ceY-y)*sizeX] = branchId;
-            if (ceX-x >= 0 && ceY+y < sizeY && ceZ+z < sizeZ &&
-                labelData[ceZ+z][0][ceX-x+(ceY+y)*sizeX] == 0)
-              labelData[ceZ+z][0][ceX-x+(ceY+y)*sizeX] = branchId;
-            if (ceX-x >= 0 && ceY-y >= 0 && ceZ+z < sizeZ &&
-                labelData[ceZ+z][0][ceX-x+(ceY-y)*sizeX] == 0)
-              labelData[ceZ+z][0][ceX-x+(ceY-y)*sizeX] = branchId;
-            if (ceX+x < sizeX && ceY+y < sizeY && ceZ-z >= 0 &&
-                labelData[ceZ-z][0][ceX+x+(ceY+y)*sizeX] == 0)
-              labelData[ceZ-z][0][ceX+x+(ceY+y)*sizeX] = branchId;
-            if (ceX+x < sizeX && ceY-y >= 0 && ceZ-z >= 0 &&
-                labelData[ceZ-z][0][ceX+x+(ceY-y)*sizeX] == 0)
-              labelData[ceZ-z][0][ceX+x+(ceY-y)*sizeX] = branchId;
-            if (ceX-x >= 0 && ceY+y < sizeY && ceZ-z >= 0 &&
-                labelData[ceZ-z][0][ceX-x+(ceY+y)*sizeX] == 0)
-              labelData[ceZ-z][0][ceX-x+(ceY+y)*sizeX] = branchId;
-            if (ceX-x >= 0 && ceY-y >= 0 && ceZ-z >= 0 &&
-                labelData[ceZ-z][0][ceX-x+(ceY-y)*sizeX] == 0)
-              labelData[ceZ-z][0][ceX-x+(ceY-y)*sizeX] = branchId;
+    double rTemp = Math.ceil(Math.sqrt(distanceData[pZ][0][pX+pY*sX]));
+    r = (rTemp < minLabelingSphereRadius)? minLabelingSphereRadius: (int)rTemp;
+    r *= rScale;
+    rs = r*r;
+    //int rs = (int) Math.ceil(Math.sqrt((distanceData[ceZ][0][ceX+ceY*sizeX] > 4)? distanceData[ceZ][0][ceX+ceY*sizeX]: 4)*rScale);
+    //rs*=rs;
+    //int r = (int) Math.ceil(Math.sqrt(rs));
+    for (x = 0; x <= r; x++) {
+      x2 = x*x;
+      for (y = 0; y <= r; y++) {
+        y2 = y*y;
+        for (z = 0; (sZ>1)? z <= r: z < 1; z++) {
+          if (x2+y2+z*z <= rs) {
+            if (pX+x < sX && pY+y < sY && pZ+z < sZ &&
+                labelData[pZ+z][0][pX+x+(pY+y)*sX] == 0)
+              labelData[pZ+z][0][pX+x+(pY+y)*sX] = branchId;
+            if (pX+x < sX && pY-y >= 0 && pZ+z < sZ &&
+                labelData[pZ+z][0][pX+x+(pY-y)*sX] == 0)
+              labelData[pZ+z][0][pX+x+(pY-y)*sX] = branchId;
+            if (pX-x >= 0 && pY+y < sY && pZ+z < sZ &&
+                labelData[pZ+z][0][pX-x+(pY+y)*sX] == 0)
+              labelData[pZ+z][0][pX-x+(pY+y)*sX] = branchId;
+            if (pX-x >= 0 && pY-y >= 0 && pZ+z < sZ &&
+                labelData[pZ+z][0][pX-x+(pY-y)*sX] == 0)
+              labelData[pZ+z][0][pX-x+(pY-y)*sX] = branchId;
+            if (pX+x < sX && pY+y < sY && pZ-z >= 0 &&
+                labelData[pZ-z][0][pX+x+(pY+y)*sX] == 0)
+              labelData[pZ-z][0][pX+x+(pY+y)*sX] = branchId;
+            if (pX+x < sX && pY-y >= 0 && pZ-z >= 0 &&
+                labelData[pZ-z][0][pX+x+(pY-y)*sX] == 0)
+              labelData[pZ-z][0][pX+x+(pY-y)*sX] = branchId;
+            if (pX-x >= 0 && pY+y < sY && pZ-z >= 0 &&
+                labelData[pZ-z][0][pX-x+(pY+y)*sX] == 0)
+              labelData[pZ-z][0][pX-x+(pY+y)*sX] = branchId;
+            if (pX-x >= 0 && pY-y >= 0 && pZ-z >= 0 &&
+                labelData[pZ-z][0][pX-x+(pY-y)*sX] == 0)
+              labelData[pZ-z][0][pX-x+(pY-y)*sX] = branchId;
           }
         }
       }
@@ -358,6 +392,9 @@ public class NetworkDescriptionConstructor {
     return this.graph;
   }
 
+  /**
+   * @return Seed points
+   */
   public List<Point3i> getSeedPoints() {
     return new ArrayList<Point3i>(seeds);
   }

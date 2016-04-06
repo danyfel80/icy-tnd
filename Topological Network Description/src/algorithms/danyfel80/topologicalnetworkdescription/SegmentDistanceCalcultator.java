@@ -45,8 +45,15 @@ public class SegmentDistanceCalcultator {
     MorphOp mop = new MorphOp();
     distanceMap = new Sequence(segmentedSequence.getName() + "_DistanceMap");
     distanceMap.copyDataFrom(segmentedSequence);
-    mop.distanceMap3D(distanceMap, 127, true);
+    
+    if (distanceMap.getSizeZ() == 1) {
+      mop.distanceMap2D(distanceMap, 0, 127, true);
+    } else {
+      mop.distanceMap3D(distanceMap, 127, true);
+    }
+    
     distanceMap.dataChanged();
+    
     double[][][] distXYZData = distanceMap.getDataXYCZAsDouble(0);
     
     int sizeX = segmentedSequence.getSizeX();

@@ -25,10 +25,14 @@ public class TopologicalNetworkDescription extends EzPlug {
 
   private EzVarSequence sequenceIn = new EzVarSequence("Sequence");
   private EzVarInteger thresholdIn = new EzVarInteger("Threshold value");
+  private EzVarInteger inMinLabelingRadius = new EzVarInteger("Minimum Labeling Radius");
 
   @Override
   protected void initialize() {
     thresholdIn.setValue(128);
+    thresholdIn.setMinValue(1);
+    inMinLabelingRadius.setValue(4);
+    inMinLabelingRadius.setMinValue(2);
     addEzComponent(sequenceIn);
     addEzComponent(thresholdIn);
   }
@@ -107,7 +111,7 @@ public class TopologicalNetworkDescription extends EzPlug {
 
     // Get sequence description graph
     cpu.start();
-    NetworkDescriptionConstructor ndc = new NetworkDescriptionConstructor(endnessSequence, minimumSpanningTreeSequence, squaredDistanceMapSequence);
+    NetworkDescriptionConstructor ndc = new NetworkDescriptionConstructor(endnessSequence, minimumSpanningTreeSequence, squaredDistanceMapSequence, 4);
     Sequence skeletonSequence = ndc.process(); // skeleton
     Sequence labelsSequence = ndc.getLabelSequence();
     Sequence branchSequence = ndc.getBranchSequence();

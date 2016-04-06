@@ -16,7 +16,7 @@ import plugins.kernel.roi.roi2d.ROI2DPoint;
 
 public class CostToSeedPlugin extends EzPlug implements Block{
 
-  private EzVarSequence inputOriginalSequence = new EzVarSequence("Original Sequence");
+  private EzVarSequence inputOriginalSequence = new EzVarSequence("Sequence with seeds(ROIs)");
   private EzVarSequence inputInvertedDistanceMapSequence = new EzVarSequence("Inverted Distance Map");
   private EzVarBoolean inputAddResult = new EzVarBoolean("Show Result Sequences", true);
 
