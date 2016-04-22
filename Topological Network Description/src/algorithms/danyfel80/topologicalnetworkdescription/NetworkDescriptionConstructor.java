@@ -70,9 +70,10 @@ public class NetworkDescriptionConstructor {
 	private Set<Point3i> seeds;
 
 	private int minLabelingSphereRadius;
+	private double radiusScale = 2.5;
 
 	public NetworkDescriptionConstructor(Sequence endnessSequence, Sequence minimumSpaningTree,
-	    Sequence squaredDistanceMap, int minLabelingSphereRadius) {
+	    Sequence squaredDistanceMap, int minLabelingSphereRadius, double radiusScale) {
 		this.endnessSequence = endnessSequence;
 		this.minimumSpanningTree = minimumSpaningTree;
 		this.distanceMap = squaredDistanceMap;
@@ -83,6 +84,9 @@ public class NetworkDescriptionConstructor {
 		this.skeletonSequence = null;
 
 		this.graph = null;
+		
+		this.minLabelingSphereRadius = minLabelingSphereRadius;
+		this.radiusScale = radiusScale;
 	}
 
 	/**
@@ -239,11 +243,11 @@ public class NetworkDescriptionConstructor {
 
 		int x, y, z, r, rs, x2, y2;
 
-		double rScale = 2.5;
+		//double rScale = 2.5;
 
 		double rTemp = Math.ceil(Math.sqrt(distanceData[pZ][0][pX + pY * sX]));
 		r = (rTemp < minLabelingSphereRadius) ? minLabelingSphereRadius : (int) rTemp;
-		r *= rScale;
+		r *= radiusScale;
 		rs = r * r;
 		// int rs = (int) Math.ceil(Math.sqrt((distanceData[ceZ][0][ceX+ceY*sizeX] >
 		// 4)? distanceData[ceZ][0][ceX+ceY*sizeX]: 4)*rScale);
@@ -325,6 +329,7 @@ public class NetworkDescriptionConstructor {
 					for (int xy = 0; xy < sizeX * sizeY; xy++) {
 						tempData[0][xy] = (TypeUtil.unsign(skeletonData[z][0][xy]) == 0 ? 0 : labelData[z][0][xy]);
 					}
+					tempLSImage.dataChanged();
 					labeledSkeletonSequence.setImage(0, z, tempLSImage);
 				}
 				labeledSkeletonSequence.endUpdate();
@@ -352,29 +357,35 @@ public class NetworkDescriptionConstructor {
 			for (int x = 0; x < sizeX; x++) {
 				for (int y = 0; y < sizeY; y++) {
 					if (TypeUtil.unsign(endPointData[z][0][x + y * sizeX]) != 0) {
-						Point3i p = new Point3i(x, y, z);
-						Point3i b = new Point3i(x, y, z);
+						Point3i child = new Point3i(x, y, z);
+						Point3i node = new Point3i(x, y, z);
+						
 
-						int ppx = mstData[p.z][0][p.x + p.y * sizeX];
-						int ppy = mstData[p.z][1][p.x + p.y * sizeX];
-						int ppz = mstData[p.z][2][p.x + p.y * sizeX];
-						Point3i pp = new Point3i(ppx, ppy, ppz);
+						int parentx = mstData[node.z][0][node.x + node.y * sizeX];
+						int parenty = mstData[node.z][1][node.x + node.y * sizeX];
+						int parentz = mstData[node.z][2][node.x + node.y * sizeX];
+						Point3i parent = new Point3i(parentx, parenty, parentz);
 
-						while (!p.equals(pp)) {
-							if (TypeUtil.unsign(branchData[pp.z][0][pp.x + pp.y * sizeX]) != 0) {
-								graph.addVertex(pp);
-								graph.addVertex(b);
-								graph.addEdge(pp, b);
-								b = pp;
+						while (!node.equals(parent)) {
+							if (TypeUtil.unsign(branchData[parent.z][0][parent.x + parent.y * sizeX]) != 0) {
+								graph.addVertex(parent);
+								graph.addVertex(child);
+								graph.addEdge(parent, child);
+								child = parent;
 							}
-							p = pp;
-							ppx = mstData[p.z][0][p.x + p.y * sizeX];
-							ppy = mstData[p.z][1][p.x + p.y * sizeX];
-							ppz = mstData[p.z][2][p.x + p.y * sizeX];
-							pp = new Point3i(ppx, ppy, ppz);
+							node = parent;
+							parentx = mstData[node.z][0][node.x + node.y * sizeX];
+							parenty = mstData[node.z][1][node.x + node.y * sizeX];
+							parentz = mstData[node.z][2][node.x + node.y * sizeX];
+							parent = new Point3i(parentx, parenty, parentz);
 						}
-						seeds.add(p);
-
+						seeds.add(node);
+						
+						if (!parent.equals(child)) {
+							graph.addVertex(parent);
+							graph.addVertex(child);
+							graph.addEdge(parent, child);
+						}
 					}
 				}
 			}

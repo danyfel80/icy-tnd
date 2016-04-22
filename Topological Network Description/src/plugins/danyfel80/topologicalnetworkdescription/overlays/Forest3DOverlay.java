@@ -1,6 +1,7 @@
 package plugins.danyfel80.topologicalnetworkdescription.overlays;
 
 import java.awt.Color;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,6 @@ import org.jgrapht.graph.DefaultEdge;
 
 import icy.painter.Overlay;
 import icy.painter.VtkPainter;
-import icy.util.Random;
 import vtk.vtkActor;
 import vtk.vtkCellArray;
 import vtk.vtkLine;
@@ -31,12 +31,15 @@ public class Forest3DOverlay extends Overlay implements VtkPainter {
 
 	private vtkActor edgesActor;
 
-	public Forest3DOverlay(String name, DirectedGraph<Point3i, DefaultEdge> graph, List<Point3i> seeds) {
-		super(name);
-		createForest(graph, seeds);
+	public Forest3DOverlay(String name, DirectedGraph<Point3i, DefaultEdge> graph, List<Point3i> seeds,
+	    Map<Point3i, Integer> depthMap) {
+		super(
+		    name);
+		createForest(graph, seeds, depthMap);
 	}
 
-	private void createForest(DirectedGraph<Point3i, DefaultEdge> graph, List<Point3i> seeds) {
+	private void createForest(
+	    DirectedGraph<Point3i, DefaultEdge> graph, List<Point3i> seeds, Map<Point3i, Integer> depthMap) {
 
 		// Set points
 		final vtkPoints vertices = new vtkPoints();
@@ -48,7 +51,10 @@ public class Forest3DOverlay extends Overlay implements VtkPainter {
 		// Set lines
 
 		vtkCellArray edges = new vtkCellArray();
-		// TODO fix coloring... VTK breaks
+
+		double maxDepth = (double) Collections.max(depthMap.values());
+
+		// TODO fix coloring... VTK breaks on mac
 		vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
 		colors.SetNumberOfComponents(3);
 		colors.SetNumberOfTuples(graph.edgeSet().size());
@@ -64,7 +70,9 @@ public class Forest3DOverlay extends Overlay implements VtkPainter {
 			line.GetPointIds().SetId(1, vertexIds.get(pT));
 
 			edges.InsertNextCell(line);
-			Color c = new Color(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256));
+			int dpth = depthMap.get(pT);
+			dpth = (int) Math.round(255.0 * ((double) dpth / maxDepth));
+			Color c = new Color(dpth, dpth, dpth);
 			final byte r = (byte) c.getRed();
 			final byte g = (byte) c.getGreen();
 			final byte b = (byte) c.getBlue();

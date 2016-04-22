@@ -13,6 +13,7 @@ import icy.roi.ROI;
 import icy.sequence.Sequence;
 import icy.system.profile.CPUMonitor;
 import plugins.adufour.ezplug.EzPlug;
+import plugins.adufour.ezplug.EzVarDouble;
 import plugins.adufour.ezplug.EzVarInteger;
 import plugins.adufour.ezplug.EzVarSequence;
 import plugins.kernel.roi.roi2d.ROI2DPoint;
@@ -27,6 +28,7 @@ public class TopologicalNetworkDescription extends EzPlug {
 	private EzVarSequence sequenceIn = new EzVarSequence("Sequence");
 	private EzVarInteger thresholdIn = new EzVarInteger("Threshold value");
 	private EzVarInteger inMinLabelingRadius = new EzVarInteger("Minimum Labeling Radius");
+	private EzVarDouble inLabelingRadiusScale = new EzVarDouble("Labeling Radius Scale");
 
 	@Override
 	protected void initialize() {
@@ -34,6 +36,8 @@ public class TopologicalNetworkDescription extends EzPlug {
 		thresholdIn.setMinValue(1);
 		inMinLabelingRadius.setValue(4);
 		inMinLabelingRadius.setMinValue(2);
+		inLabelingRadiusScale.setValue(2.5);
+		inLabelingRadiusScale.setMinValue(0.1);
 		addEzComponent(sequenceIn);
 		addEzComponent(thresholdIn);
 	}
@@ -125,7 +129,7 @@ public class TopologicalNetworkDescription extends EzPlug {
 		// Get sequence description graph
 		cpu.start();
 		NetworkDescriptionConstructor ndc = new NetworkDescriptionConstructor(endnessSequence, minimumSpanningTreeSequence,
-		    squaredDistanceMapSequence, 4);
+		    squaredDistanceMapSequence, inMinLabelingRadius.getValue(), inLabelingRadiusScale.getValue());
 		Sequence skeletonSequence = ndc.process(); // skeleton
 		Sequence labelsSequence = ndc.getLabelSequence();
 		Sequence branchSequence = ndc.getBranchSequence();
