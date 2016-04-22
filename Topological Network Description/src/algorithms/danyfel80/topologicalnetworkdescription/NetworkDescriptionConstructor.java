@@ -28,374 +28,365 @@ import icy.type.point.Point5D;
  */
 public class NetworkDescriptionConstructor {
 
-  public static class CostElement implements Comparable<CostElement>
-  {
-    private final Double cost;
-    private final Point5D point;
+	public static class CostElement implements Comparable<CostElement> {
+		private final Double cost;
+		private final Point5D point;
 
-    public CostElement(Double cost, Point5D point)
-    {
-      this.cost  = cost;
-      this.point = point;
-    }
+		public CostElement(Double cost, Point5D point) {
+			this.cost = cost;
+			this.point = point;
+		}
 
-    public Double getCost()   { return cost; }
-    public Point5D getPoint() { return point; }
+		public Double getCost() {
+			return cost;
+		}
 
-    // inverted to use max in priority queue
-    @Override
-    public int compareTo(CostElement ce) {
-      if (cost > ce.getCost()) return -1;
-      if (cost < ce.getCost()) return 1;
-      return 0;
-    }
+		public Point5D getPoint() {
+			return point;
+		}
 
-  }
+		// inverted to use max in priority queue
+		@Override
+		public int compareTo(CostElement ce) {
+			if (cost > ce.getCost())
+				return -1;
+			if (cost < ce.getCost())
+				return 1;
+			return 0;
+		}
 
-  private Sequence endnessSequence;
-  private Sequence minimumSpanningTree;
-  private Sequence distanceMap;
+	}
 
-  private Sequence labelSequence;
-  private Sequence endPointSequence;
-  private Sequence branchSequence;
-  private Sequence skeletonSequence;
-  private Sequence labeledSkeletonSequence;
-  private DirectedGraph<Point3i, DefaultEdge> graph;
-  private Set<Point3i> seeds;
+	private Sequence endnessSequence;
+	private Sequence minimumSpanningTree;
+	private Sequence distanceMap;
 
-  private int minLabelingSphereRadius;
+	private Sequence labelSequence;
+	private Sequence endPointSequence;
+	private Sequence branchSequence;
+	private Sequence skeletonSequence;
+	private Sequence labeledSkeletonSequence;
+	private DirectedGraph<Point3i, DefaultEdge> graph;
+	private Set<Point3i> seeds;
 
-  public NetworkDescriptionConstructor(
-      Sequence endnessSequence, 
-      Sequence minimumSpaningTree, 
-      Sequence squaredDistanceMap,
-      int minLabelingSphereRadius) {
-    this.endnessSequence = endnessSequence;
-    this.minimumSpanningTree = minimumSpaningTree;
-    this.distanceMap = squaredDistanceMap;
+	private int minLabelingSphereRadius;
 
-    this.labelSequence = null;
-    this.endPointSequence = null;
-    this.branchSequence = null;
-    this.skeletonSequence = null;
+	public NetworkDescriptionConstructor(Sequence endnessSequence, Sequence minimumSpaningTree,
+	    Sequence squaredDistanceMap, int minLabelingSphereRadius) {
+		this.endnessSequence = endnessSequence;
+		this.minimumSpanningTree = minimumSpaningTree;
+		this.distanceMap = squaredDistanceMap;
 
-    this.graph = null;
-  }
-  
-  /**
-   * @return skeleton.
-   */
-  public Sequence process() {
+		this.labelSequence = null;
+		this.endPointSequence = null;
+		this.branchSequence = null;
+		this.skeletonSequence = null;
 
-    labelSequence = new Sequence(minimumSpanningTree.getName() + "_Labels");
-    endPointSequence = new Sequence(minimumSpanningTree.getName() + "_EndPoints");
-    branchSequence = new Sequence(minimumSpanningTree.getName() + "_Branches");
-    skeletonSequence = new Sequence(minimumSpanningTree.getName() + "_Skeleton");
+		this.graph = null;
+	}
 
-    if (!endnessSequence.getDataType_().equals(DataType.DOUBLE))
-      SequenceUtil.convertToType(endnessSequence, DataType.DOUBLE, false);
-    if (!minimumSpanningTree.getDataType_().equals(DataType.INT))
-      SequenceUtil.convertToType(minimumSpanningTree, DataType.INT, false);
-    if (!distanceMap.getDataType_().equals(DataType.INT))
-      SequenceUtil.convertToType(distanceMap, DataType.INT, false);
+	/**
+	 * @return skeleton.
+	 */
+	public Sequence process() {
 
-    double[][][] endnessData = endnessSequence.getDataXYCZAsDouble(0);
-    int[][][] parentData = minimumSpanningTree.getDataXYCZAsInt(0);
-    int[][][] distanceData = distanceMap.getDataXYCZAsInt(0);
-    int sizeX = endnessSequence.getSizeX();
-    int sizeY = endnessSequence.getSizeY();
-    int sizeZ = endnessSequence.getSizeZ();
+		labelSequence = new Sequence(minimumSpanningTree.getName() + "_Labels");
+		endPointSequence = new Sequence(minimumSpanningTree.getName() + "_EndPoints");
+		branchSequence = new Sequence(minimumSpanningTree.getName() + "_Branches");
+		skeletonSequence = new Sequence(minimumSpanningTree.getName() + "_Skeleton");
 
-    PriorityQueue<CostElement> q = new PriorityQueue<>();
+		if (!endnessSequence.getDataType_().equals(DataType.DOUBLE))
+			SequenceUtil.convertToType(endnessSequence, DataType.DOUBLE, false);
+		if (!minimumSpanningTree.getDataType_().equals(DataType.INT))
+			SequenceUtil.convertToType(minimumSpanningTree, DataType.INT, false);
+		if (!distanceMap.getDataType_().equals(DataType.INT))
+			SequenceUtil.convertToType(distanceMap, DataType.INT, false);
 
-    // Fill queue
-    Point5D point;
-    CostElement ce;
-    for (int z = 0; z < sizeZ; z++) {
-      for (int x = 0; x < sizeX; x++) {
-        for (int y = 0; y < sizeY; y++) {
-          if (endnessData[z][0][x+y*sizeX] > 0) {
-            point = new Point5D.Double(x, y, z, 0, 0);
-            ce = new CostElement(endnessData[z][0][x+y*sizeX], point);
-            q.add(ce);
-          }
-        }
-      }
-    }
+		double[][][] endnessData = endnessSequence.getDataXYCZAsDouble(0);
+		int[][][] parentData = minimumSpanningTree.getDataXYCZAsInt(0);
+		int[][][] distanceData = distanceMap.getDataXYCZAsInt(0);
+		int sizeX = endnessSequence.getSizeX();
+		int sizeY = endnessSequence.getSizeY();
+		int sizeZ = endnessSequence.getSizeZ();
 
-    // Create Containers l, e, y, s
-    labelSequence.beginUpdate();
-    endPointSequence.beginUpdate();
-    branchSequence.beginUpdate();
-    skeletonSequence.beginUpdate();
+		PriorityQueue<CostElement> q = new PriorityQueue<>();
 
-    for (int z = 0; z < sizeZ; z++) {
-      IcyBufferedImage tempLImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.INT);
-      IcyBufferedImage tempEImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.UBYTE);
-      IcyBufferedImage tempYImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.UBYTE);
-      IcyBufferedImage tempSImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.UBYTE);
-      labelSequence.setImage(0, z, tempLImage);
-      endPointSequence.setImage(0, z, tempEImage);
-      branchSequence.setImage(0, z, tempYImage);
-      skeletonSequence.setImage(0, z, tempSImage);
-    }
-    labelSequence.dataChanged();
-    endPointSequence.dataChanged();
-    branchSequence.dataChanged();
-    skeletonSequence.dataChanged();
+		// Fill queue
+		Point5D point;
+		CostElement ce;
+		for (int z = 0; z < sizeZ; z++) {
+			for (int x = 0; x < sizeX; x++) {
+				for (int y = 0; y < sizeY; y++) {
+					if (endnessData[z][0][x + y * sizeX] > 0) {
+						point = new Point5D.Double(x, y, z, 0, 0);
+						ce = new CostElement(endnessData[z][0][x + y * sizeX], point);
+						q.add(ce);
+					}
+				}
+			}
+		}
 
+		// Create Containers l, e, y, s
+		labelSequence.beginUpdate();
+		endPointSequence.beginUpdate();
+		branchSequence.beginUpdate();
+		skeletonSequence.beginUpdate();
 
-    int[][][] labelData = labelSequence.getDataXYCZAsInt(0);
-    byte[][][] endPointData = endPointSequence.getDataXYCZAsByte(0);
-    byte[][][] branchData = branchSequence.getDataXYCZAsByte(0);
-    byte[][][] skeletonData = skeletonSequence.getDataXYCZAsByte(0);
+		for (int z = 0; z < sizeZ; z++) {
+			IcyBufferedImage tempLImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.INT);
+			IcyBufferedImage tempEImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.UBYTE);
+			IcyBufferedImage tempYImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.UBYTE);
+			IcyBufferedImage tempSImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.UBYTE);
+			labelSequence.setImage(0, z, tempLImage);
+			endPointSequence.setImage(0, z, tempEImage);
+			branchSequence.setImage(0, z, tempYImage);
+			skeletonSequence.setImage(0, z, tempSImage);
+		}
+		labelSequence.dataChanged();
+		endPointSequence.dataChanged();
+		branchSequence.dataChanged();
+		skeletonSequence.dataChanged();
 
-    int branchId = 1;
+		int[][][] labelData = labelSequence.getDataXYCZAsInt(0);
+		byte[][][] endPointData = endPointSequence.getDataXYCZAsByte(0);
+		byte[][][] branchData = branchSequence.getDataXYCZAsByte(0);
+		byte[][][] skeletonData = skeletonSequence.getDataXYCZAsByte(0);
 
-    int ceX, ceY, ceZ, pX, pY, pZ;
-    
-    while (!q.isEmpty()) {
+		int branchId = 1;
 
-      ce = q.remove();
-      ceX = (int)ce.getPoint().getX();
-      ceY = (int)ce.getPoint().getY();
-      ceZ = (int)ce.getPoint().getZ();
+		int ceX, ceY, ceZ, pX, pY, pZ;
 
-      if (labelData[ceZ][0][ceX+ceY*sizeX] == 0) {
-        //Treat not marked element ce
+		while (!q.isEmpty()) {
 
-        // Mark neighbor sphere
-        markPoint(labelData, distanceData, sizeX, sizeY, sizeZ, ceX, ceY, ceZ, branchId);
+			ce = q.remove();
+			ceX = (int) ce.getPoint().getX();
+			ceY = (int) ce.getPoint().getY();
+			ceZ = (int) ce.getPoint().getZ();
 
-        endPointData[ceZ][0][ceX+ceY*sizeX] = (byte)DataType.UBYTE.getMaxValue();
-        skeletonData[ceZ][0][ceX+ceY*sizeX] = (byte)DataType.UBYTE.getMaxValue();
+			if (labelData[ceZ][0][ceX + ceY * sizeX] == 0) {
+				// Treat not marked element ce
 
-        boolean addNewPoints = true;
-        pX = parentData[ceZ][0][ceX+ceY*sizeX];
-        pY = parentData[ceZ][1][ceX+ceY*sizeX];
-        pZ = parentData[ceZ][2][ceX+ceY*sizeX];
-        do {
-          ceX = pX;
-          ceY = pY;
-          ceZ = pZ;
-          pX = parentData[ceZ][0][ceX+ceY*sizeX];
-          pY = parentData[ceZ][1][ceX+ceY*sizeX];
-          pZ = parentData[ceZ][2][ceX+ceY*sizeX];
+				// Mark neighbor sphere
+				markPoint(labelData, distanceData, sizeX, sizeY, sizeZ, ceX, ceY, ceZ, branchId);
 
-          if (addNewPoints) {
-            if (TypeUtil.unsign(skeletonData[ceZ][0][ceX+ceY*sizeX]) == 0) {
-              labelData[ceZ][0][ceX+ceY*sizeX] = branchId;
-              // Mark neighbor sphere
-              markPoint(labelData, distanceData, sizeX, sizeY, sizeZ, ceX, ceY, ceZ, branchId);
+				endPointData[ceZ][0][ceX + ceY * sizeX] = (byte) DataType.UBYTE.getMaxValue();
+				skeletonData[ceZ][0][ceX + ceY * sizeX] = (byte) DataType.UBYTE.getMaxValue();
 
-              skeletonData[ceZ][0][ceX+ceY*sizeX] = (byte)DataType.UBYTE.getMaxValue();
-            }
-            else {
-              branchData[ceZ][0][ceX+ceY*sizeX] = (byte)DataType.UBYTE.getMaxValue();
-              branchId++;
-              addNewPoints = false;
-            }
-          }
-          else {
-            if (TypeUtil.unsign(branchData[ceZ][0][ceX+ceY*sizeX]) == 0) {
-              labelData[ceZ][0][ceX+ceY*sizeX] = branchId;
-              // mark neighbor sphere
-              markPoint(labelData, distanceData, sizeX, sizeY, sizeZ, ceX, ceY, ceZ, branchId);
+				boolean addNewPoints = true;
+				pX = parentData[ceZ][0][ceX + ceY * sizeX];
+				pY = parentData[ceZ][1][ceX + ceY * sizeX];
+				pZ = parentData[ceZ][2][ceX + ceY * sizeX];
+				do {
+					ceX = pX;
+					ceY = pY;
+					ceZ = pZ;
+					pX = parentData[ceZ][0][ceX + ceY * sizeX];
+					pY = parentData[ceZ][1][ceX + ceY * sizeX];
+					pZ = parentData[ceZ][2][ceX + ceY * sizeX];
 
-            }
-            else {
-              branchId++;
-            }
-          }
+					if (addNewPoints) {
+						if (TypeUtil.unsign(skeletonData[ceZ][0][ceX + ceY * sizeX]) == 0) {
+							labelData[ceZ][0][ceX + ceY * sizeX] = branchId;
+							// Mark neighbor sphere
+							markPoint(labelData, distanceData, sizeX, sizeY, sizeZ, ceX, ceY, ceZ, branchId);
 
-        } while (ceX != pX || ceY != pY || ceZ != pZ);
+							skeletonData[ceZ][0][ceX + ceY * sizeX] = (byte) DataType.UBYTE.getMaxValue();
+						} else {
+							branchData[ceZ][0][ceX + ceY * sizeX] = (byte) DataType.UBYTE.getMaxValue();
+							branchId++;
+							addNewPoints = false;
+						}
+					} else {
+						if (TypeUtil.unsign(branchData[ceZ][0][ceX + ceY * sizeX]) == 0) {
+							labelData[ceZ][0][ceX + ceY * sizeX] = branchId;
+							// mark neighbor sphere
+							markPoint(labelData, distanceData, sizeX, sizeY, sizeZ, ceX, ceY, ceZ, branchId);
 
-      }
-    }
+						} else {
+							branchId++;
+						}
+					}
 
+				} while (ceX != pX || ceY != pY || ceZ != pZ);
 
-    labelSequence.endUpdate();
-    endPointSequence.endUpdate();
-    branchSequence.endUpdate();
-    skeletonSequence.endUpdate();
+			}
+		}
 
-    return skeletonSequence;
-  }
+		labelSequence.endUpdate();
+		endPointSequence.endUpdate();
+		branchSequence.endUpdate();
+		skeletonSequence.endUpdate();
 
-  /**
-   * Creates a sphere with value branchId in the labelData of a radius equal to
-   * the value in distanceData at pX, pY, pZ. 
-   * @param labelData
-   * @param distanceData
-   * @param sX
-   * @param sY
-   * @param sZ
-   * @param pX
-   * @param pY
-   * @param pZ
-   * @param branchId
-   */
-  private void markPoint(int[][][] labelData, int[][][] distanceData, int sX, int sY, int sZ, int pX, int pY, int pZ,
-      int branchId) {
-    
-    int x, y, z, r, rs, x2, y2;
-    
-    double rScale = 2.5;
+		return skeletonSequence;
+	}
 
-    double rTemp = Math.ceil(Math.sqrt(distanceData[pZ][0][pX+pY*sX]));
-    r = (rTemp < minLabelingSphereRadius)? minLabelingSphereRadius: (int)rTemp;
-    r *= rScale;
-    rs = r*r;
-    //int rs = (int) Math.ceil(Math.sqrt((distanceData[ceZ][0][ceX+ceY*sizeX] > 4)? distanceData[ceZ][0][ceX+ceY*sizeX]: 4)*rScale);
-    //rs*=rs;
-    //int r = (int) Math.ceil(Math.sqrt(rs));
-    for (x = 0; x <= r; x++) {
-      x2 = x*x;
-      for (y = 0; y <= r; y++) {
-        y2 = y*y;
-        for (z = 0; (sZ>1)? z <= r: z < 1; z++) {
-          if (x2+y2+z*z <= rs) {
-            if (pX+x < sX && pY+y < sY && pZ+z < sZ &&
-                labelData[pZ+z][0][pX+x+(pY+y)*sX] == 0)
-              labelData[pZ+z][0][pX+x+(pY+y)*sX] = branchId;
-            if (pX+x < sX && pY-y >= 0 && pZ+z < sZ &&
-                labelData[pZ+z][0][pX+x+(pY-y)*sX] == 0)
-              labelData[pZ+z][0][pX+x+(pY-y)*sX] = branchId;
-            if (pX-x >= 0 && pY+y < sY && pZ+z < sZ &&
-                labelData[pZ+z][0][pX-x+(pY+y)*sX] == 0)
-              labelData[pZ+z][0][pX-x+(pY+y)*sX] = branchId;
-            if (pX-x >= 0 && pY-y >= 0 && pZ+z < sZ &&
-                labelData[pZ+z][0][pX-x+(pY-y)*sX] == 0)
-              labelData[pZ+z][0][pX-x+(pY-y)*sX] = branchId;
-            if (pX+x < sX && pY+y < sY && pZ-z >= 0 &&
-                labelData[pZ-z][0][pX+x+(pY+y)*sX] == 0)
-              labelData[pZ-z][0][pX+x+(pY+y)*sX] = branchId;
-            if (pX+x < sX && pY-y >= 0 && pZ-z >= 0 &&
-                labelData[pZ-z][0][pX+x+(pY-y)*sX] == 0)
-              labelData[pZ-z][0][pX+x+(pY-y)*sX] = branchId;
-            if (pX-x >= 0 && pY+y < sY && pZ-z >= 0 &&
-                labelData[pZ-z][0][pX-x+(pY+y)*sX] == 0)
-              labelData[pZ-z][0][pX-x+(pY+y)*sX] = branchId;
-            if (pX-x >= 0 && pY-y >= 0 && pZ-z >= 0 &&
-                labelData[pZ-z][0][pX-x+(pY-y)*sX] == 0)
-              labelData[pZ-z][0][pX-x+(pY-y)*sX] = branchId;
-          }
-        }
-      }
-    }
-  }
+	/**
+	 * Creates a sphere with value branchId in the labelData of a radius equal to
+	 * the value in distanceData at pX, pY, pZ.
+	 * 
+	 * @param labelData
+	 * @param distanceData
+	 * @param sX
+	 * @param sY
+	 * @param sZ
+	 * @param pX
+	 * @param pY
+	 * @param pZ
+	 * @param branchId
+	 */
+	private void markPoint(int[][][] labelData, int[][][] distanceData, int sX, int sY, int sZ, int pX, int pY, int pZ,
+	    int branchId) {
 
-  /**
-   * @return the labelSequence
-   */
-  public Sequence getLabelSequence() {
-    return labelSequence;
-  }
+		int x, y, z, r, rs, x2, y2;
 
-  /**
-   * @return the endPointSequence
-   */
-  public Sequence getEndPointSequence() {
-    return endPointSequence;
-  }
+		double rScale = 2.5;
 
-  /**
-   * @return the branchSequence
-   */
-  public Sequence getBranchSequence() {
-    return branchSequence;
-  }
+		double rTemp = Math.ceil(Math.sqrt(distanceData[pZ][0][pX + pY * sX]));
+		r = (rTemp < minLabelingSphereRadius) ? minLabelingSphereRadius : (int) rTemp;
+		r *= rScale;
+		rs = r * r;
+		// int rs = (int) Math.ceil(Math.sqrt((distanceData[ceZ][0][ceX+ceY*sizeX] >
+		// 4)? distanceData[ceZ][0][ceX+ceY*sizeX]: 4)*rScale);
+		// rs*=rs;
+		// int r = (int) Math.ceil(Math.sqrt(rs));
+		for (x = 0; x <= r; x++) {
+			x2 = x * x;
+			for (y = 0; y <= r; y++) {
+				y2 = y * y;
+				for (z = 0; (sZ > 1) ? z <= r : z < 1; z++) {
+					if (x2 + y2 + z * z <= rs) {
+						if (pX + x < sX && pY + y < sY && pZ + z < sZ && labelData[pZ + z][0][pX + x + (pY + y) * sX] == 0)
+							labelData[pZ + z][0][pX + x + (pY + y) * sX] = branchId;
+						if (pX + x < sX && pY - y >= 0 && pZ + z < sZ && labelData[pZ + z][0][pX + x + (pY - y) * sX] == 0)
+							labelData[pZ + z][0][pX + x + (pY - y) * sX] = branchId;
+						if (pX - x >= 0 && pY + y < sY && pZ + z < sZ && labelData[pZ + z][0][pX - x + (pY + y) * sX] == 0)
+							labelData[pZ + z][0][pX - x + (pY + y) * sX] = branchId;
+						if (pX - x >= 0 && pY - y >= 0 && pZ + z < sZ && labelData[pZ + z][0][pX - x + (pY - y) * sX] == 0)
+							labelData[pZ + z][0][pX - x + (pY - y) * sX] = branchId;
+						if (pX + x < sX && pY + y < sY && pZ - z >= 0 && labelData[pZ - z][0][pX + x + (pY + y) * sX] == 0)
+							labelData[pZ - z][0][pX + x + (pY + y) * sX] = branchId;
+						if (pX + x < sX && pY - y >= 0 && pZ - z >= 0 && labelData[pZ - z][0][pX + x + (pY - y) * sX] == 0)
+							labelData[pZ - z][0][pX + x + (pY - y) * sX] = branchId;
+						if (pX - x >= 0 && pY + y < sY && pZ - z >= 0 && labelData[pZ - z][0][pX - x + (pY + y) * sX] == 0)
+							labelData[pZ - z][0][pX - x + (pY + y) * sX] = branchId;
+						if (pX - x >= 0 && pY - y >= 0 && pZ - z >= 0 && labelData[pZ - z][0][pX - x + (pY - y) * sX] == 0)
+							labelData[pZ - z][0][pX - x + (pY - y) * sX] = branchId;
+					}
+				}
+			}
+		}
+	}
 
-  /**
-   * @return the skeletonSequence
-   */
-  public Sequence getSkeletonSequence() {
-    return skeletonSequence;
-  }
+	/**
+	 * @return the labelSequence
+	 */
+	public Sequence getLabelSequence() {
+		return labelSequence;
+	}
 
-  public Sequence getLabeledSkeletonSequence() {
-    if (skeletonSequence != null && labelSequence != null) {
-      if (labeledSkeletonSequence == null) {
-        labeledSkeletonSequence = new Sequence(minimumSpanningTree.getName() + "_LabeledSkeleton");
+	/**
+	 * @return the endPointSequence
+	 */
+	public Sequence getEndPointSequence() {
+		return endPointSequence;
+	}
 
-        int sizeX = endnessSequence.getSizeX();
-        int sizeY = endnessSequence.getSizeY();
-        int sizeZ = endnessSequence.getSizeZ();
+	/**
+	 * @return the branchSequence
+	 */
+	public Sequence getBranchSequence() {
+		return branchSequence;
+	}
 
-        int[][][] labelData = labelSequence.getDataXYCZAsInt(0);
-        byte[][][] skeletonData = skeletonSequence.getDataXYCZAsByte(0);
+	/**
+	 * @return the skeletonSequence
+	 */
+	public Sequence getSkeletonSequence() {
+		return skeletonSequence;
+	}
 
-        labeledSkeletonSequence.beginUpdate();
+	public Sequence getLabeledSkeletonSequence() {
+		if (skeletonSequence != null && labelSequence != null) {
+			if (labeledSkeletonSequence == null) {
+				labeledSkeletonSequence = new Sequence(minimumSpanningTree.getName() + "_LabeledSkeleton");
 
-        for (int z = 0; z < sizeZ; z++) {
-          IcyBufferedImage tempLSImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.INT);
-          int[][] tempData = tempLSImage.getDataXYCAsInt();
-          for (int xy = 0; xy < sizeX*sizeY; xy++) {
-            tempData[0][xy] = (TypeUtil.unsign(skeletonData[z][0][xy]) == 0? 0: labelData[z][0][xy]);
-          }
-          labeledSkeletonSequence.setImage(0, z, tempLSImage);
-        }
-        labeledSkeletonSequence.endUpdate();
-      }
-    }
-    return labeledSkeletonSequence;
-  }
+				int sizeX = endnessSequence.getSizeX();
+				int sizeY = endnessSequence.getSizeY();
+				int sizeZ = endnessSequence.getSizeZ();
 
-  public DirectedGraph<Point3i, DefaultEdge> getGraph() {
-    if (graph != null)
-      return graph;
+				int[][][] labelData = labelSequence.getDataXYCZAsInt(0);
+				byte[][][] skeletonData = skeletonSequence.getDataXYCZAsByte(0);
 
-    this.graph = new DefaultDirectedGraph<Point3i, DefaultEdge>(DefaultEdge.class);
+				labeledSkeletonSequence.beginUpdate();
 
-    byte[][][] endPointData = endPointSequence.getDataXYCZAsByte(0);
-    byte[][][] branchData = branchSequence.getDataXYCZAsByte(0);
-    int[][][] mstData = minimumSpanningTree.getDataXYCZAsInt(0);
-    int sizeX = endPointSequence.getSizeX();
-    int sizeY = endPointSequence.getSizeY();
-    int sizeZ = endPointSequence.getSizeZ();
+				for (int z = 0; z < sizeZ; z++) {
+					IcyBufferedImage tempLSImage = new IcyBufferedImage(sizeX, sizeY, 1, DataType.INT);
+					int[][] tempData = tempLSImage.getDataXYCAsInt();
+					for (int xy = 0; xy < sizeX * sizeY; xy++) {
+						tempData[0][xy] = (TypeUtil.unsign(skeletonData[z][0][xy]) == 0 ? 0 : labelData[z][0][xy]);
+					}
+					labeledSkeletonSequence.setImage(0, z, tempLSImage);
+				}
+				labeledSkeletonSequence.endUpdate();
+			}
+		}
+		return labeledSkeletonSequence;
+	}
 
-    seeds = new HashSet<Point3i>();
+	public DirectedGraph<Point3i, DefaultEdge> getGraph() {
+		if (graph != null)
+			return graph;
 
-    for (int z = 0; z < sizeZ; z++) {
-      for (int x = 0; x < sizeX; x++) {
-        for (int y = 0; y < sizeY; y++) {
-          if (TypeUtil.unsign(endPointData[z][0][x+y*sizeX]) != 0) {
-            Point3i p = new Point3i(x,y,z);
-            Point3i b = new Point3i(x,y,z);
+		this.graph = new DefaultDirectedGraph<Point3i, DefaultEdge>(DefaultEdge.class);
 
-            int ppx = mstData[p.z][0][p.x+ p.y*sizeX];
-            int ppy = mstData[p.z][1][p.x+ p.y*sizeX];
-            int ppz = mstData[p.z][2][p.x+ p.y*sizeX];
-            Point3i pp = new Point3i(ppx, ppy, ppz);
+		byte[][][] endPointData = endPointSequence.getDataXYCZAsByte(0);
+		byte[][][] branchData = branchSequence.getDataXYCZAsByte(0);
+		int[][][] mstData = minimumSpanningTree.getDataXYCZAsInt(0);
+		int sizeX = endPointSequence.getSizeX();
+		int sizeY = endPointSequence.getSizeY();
+		int sizeZ = endPointSequence.getSizeZ();
 
-            while (!p.equals(pp)) {
-              if (TypeUtil.unsign(branchData[pp.z][0][pp.x + pp.y*sizeX]) != 0) {
-                graph.addVertex(pp);
-                graph.addVertex(b);
-                graph.addEdge(pp, b);
-                b = pp;
-              }
-              p = pp;
-              ppx = mstData[p.z][0][p.x+ p.y*sizeX];
-              ppy = mstData[p.z][1][p.x+ p.y*sizeX];
-              ppz = mstData[p.z][2][p.x+ p.y*sizeX];
-              pp = new Point3i(ppx, ppy, ppz);
-            }
-            seeds.add(p);
+		seeds = new HashSet<Point3i>();
 
-          }
-        }
-      }
-    }
+		for (int z = 0; z < sizeZ; z++) {
+			for (int x = 0; x < sizeX; x++) {
+				for (int y = 0; y < sizeY; y++) {
+					if (TypeUtil.unsign(endPointData[z][0][x + y * sizeX]) != 0) {
+						Point3i p = new Point3i(x, y, z);
+						Point3i b = new Point3i(x, y, z);
 
-    return this.graph;
-  }
+						int ppx = mstData[p.z][0][p.x + p.y * sizeX];
+						int ppy = mstData[p.z][1][p.x + p.y * sizeX];
+						int ppz = mstData[p.z][2][p.x + p.y * sizeX];
+						Point3i pp = new Point3i(ppx, ppy, ppz);
 
-  /**
-   * @return Seed points
-   */
-  public List<Point3i> getSeedPoints() {
-    return new ArrayList<Point3i>(seeds);
-  }
+						while (!p.equals(pp)) {
+							if (TypeUtil.unsign(branchData[pp.z][0][pp.x + pp.y * sizeX]) != 0) {
+								graph.addVertex(pp);
+								graph.addVertex(b);
+								graph.addEdge(pp, b);
+								b = pp;
+							}
+							p = pp;
+							ppx = mstData[p.z][0][p.x + p.y * sizeX];
+							ppy = mstData[p.z][1][p.x + p.y * sizeX];
+							ppz = mstData[p.z][2][p.x + p.y * sizeX];
+							pp = new Point3i(ppx, ppy, ppz);
+						}
+						seeds.add(p);
+
+					}
+				}
+			}
+		}
+
+		return this.graph;
+	}
+
+	/**
+	 * @return Seed points
+	 */
+	public List<Point3i> getSeedPoints() {
+		return new ArrayList<Point3i>(seeds);
+	}
 }
