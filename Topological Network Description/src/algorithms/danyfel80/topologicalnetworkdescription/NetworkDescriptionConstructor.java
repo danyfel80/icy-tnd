@@ -212,7 +212,7 @@ public class NetworkDescriptionConstructor {
 					}
 
 				} while (ceX != pX || ceY != pY || ceZ != pZ);
-
+				branchId++;
 			}
 		}
 
