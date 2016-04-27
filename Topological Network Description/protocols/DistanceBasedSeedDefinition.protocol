@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<protocol VERSION="4">
+<blocks>
+<block ID="1402908103" blockType="plugins.adufour.blocks.tools.input.Sequence" className="plugins.adufour.blocks.tools.input.Sequence" collapsed="false" definedName="Sequence" height="61" keepsResults="true" width="254" xLocation="162" yLocation="115">
+<variables>
+<input>
+<variable ID="input sequence" name="sequence" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+<block ID="1986734378" blockType="plugins.adufour.blocks.tools.input.Sequence" className="plugins.adufour.blocks.tools.input.Sequence" collapsed="false" definedName="Sequence" height="61" keepsResults="true" width="254" xLocation="160" yLocation="212">
+<variables>
+<input>
+<variable ID="input sequence" name="sequence" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+<workflow ID="161550976" blockType="plugins.adufour.blocks.lang.WorkFlow" className="plugins.adufour.blocks.lang.WorkFlow" collapsed="true" definedName="Seed extraction" height="761" keepsResults="true" width="916" xLocation="512" yLocation="131">
+<blocks>
+<block ID="1895674979" blockType="plugins.adufour.thresholder.Thresholder" className="plugins.adufour.thresholder.Thresholder" collapsed="false" definedName="Thresholder" height="192" keepsResults="true" width="397" xLocation="86" yLocation="124">
+<variables>
+<input>
+<variable ID="Input" name="Input" runtime="false" visible="true"/>
+<variable ID="channel" name="channel" runtime="false" value="0" visible="true"/>
+<variable ID="Manual thresholds" name="Manual thresholds" runtime="false" value="9.0" visible="true"/>
+<variable ID="Treat as percentiles" name="Treat as percentiles" runtime="false" value="false" visible="true"/>
+</input>
+<output>
+<variable ID="output" name="Binary output" runtime="false" visible="true"/>
+<variable ID="ROI" name="ROI" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="184281485" blockType="plugins.adufour.roi.LabelExtractor" className="plugins.adufour.roi.LabelExtractor" collapsed="false" definedName="Label Extractor" height="136" keepsResults="true" width="387" xLocation="65" yLocation="336">
+<variables>
+<input>
+<variable ID="input sequence" name="Labeled sequence" runtime="false" visible="true"/>
+<variable ID="extract mode" name="Extract" runtime="false" value="SPECIFIC_LABEL" visible="true"/>
+<variable ID="value" name="Value" runtime="false" value="1.0" visible="true"/>
+</input>
+<output>
+<variable ID="ROI" name="Extracted ROI" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="615641905" blockType="plugins.tprovoost.sequenceblocks.creation.DuplicateSequence" className="plugins.tprovoost.sequenceblocks.SequenceBlocks" collapsed="false" definedName="Duplicate sequence" height="83" keepsResults="true" width="328" xLocation="65" yLocation="2">
+<variables>
+<input>
+<variable ID="sequence" name="sequence" runtime="false" visible="true"/>
+</input>
+<output>
+<variable ID="duplicated" name="duplicated" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<workflow ID="1055307509" blockType="plugins.adufour.blocks.lang.Batch" className="plugins.adufour.blocks.lang.Batch" collapsed="false" definedName="Get Mass Centers" height="319" keepsResults="true" width="536" xLocation="31" yLocation="488">
+<blocks>
+<block ID="896631934" blockType="plugins.tprovoost.scripteditor.scriptblock.Javascript" className="plugins.tprovoost.scripteditor.scriptblock.Javascript" collapsed="false" definedName="Javascript" height="237" keepsResults="true" width="319" xLocation="153" yLocation="15">
+<variables>
+<input>
+<variable ID="Script" name="Script" runtime="false" value="importClass(Packages.icy.roi.ROI2DPoint)&#10;importClass(Packages.icy.roi.ROI2D)&#10;importClass(Packages.plugins.kernel.roi.descriptor.measure.ROIMassCenterDescriptorsPlugin)&#10;// Click on the button&#10;// to edit in a frame.&#10;point = ROIMassCenterDescriptorsPlugin.computeMassCenter(input0)&#10;roiPoint = new ROI2DPoint(point.getX(), point.getY())&#10;roiPoint.setZ(point.getZ())&#10;input1.addROI(roiPoint)&#10;output0 = input1" visible="true"/>
+<variable ID="Add Input" name="Add Input" runtime="false" value="1" visible="true"/>
+<variable ID="Add output" name="Add output" runtime="false" value="0" visible="true"/>
+<variable ID="input0" name="input0" runtime="false" type="icy.roi.ROI" visible="true"/>
+<variable ID="1060788839" name="input1" runtime="true" type="icy.sequence.Sequence" visible="true"/>
+</input>
+<output>
+<variable ID="output0" name="output0" runtime="false" type="icy.sequence.Sequence" visible="true"/>
+</output>
+</variables>
+</block>
+</blocks>
+<links>
+<link dstBlockID="896631934" dstVarID="input0" srcBlockID="1055307509" srcVarID="element" srcVarType="icy.roi.ROI"/>
+</links>
+<variables>
+<input>
+<variable ID="array" blockID="1055307509" value="" visible="true"/>
+<variable ID="896631934:Script" blockID="896631934" value="importClass(Packages.icy.roi.ROI2DPoint)&#10;importClass(Packages.icy.roi.ROI2D)&#10;importClass(Packages.plugins.kernel.roi.descriptor.measure.ROIMassCenterDescriptorsPlugin)&#10;// Click on the button&#10;// to edit in a frame.&#10;point = ROIMassCenterDescriptorsPlugin.computeMassCenter(input0)&#10;roiPoint = new ROI2DPoint(point.getX(), point.getY())&#10;roiPoint.setZ(point.getZ())&#10;input1.addROI(roiPoint)&#10;output0 = input1" visible="false"/>
+<variable ID="896631934:Add Input" blockID="896631934" value="1" visible="false"/>
+<variable ID="896631934:Add output" blockID="896631934" value="0" visible="false"/>
+<variable ID="896631934:input0" blockID="896631934" value="" visible="false"/>
+<variable ID="896631934:1060788839" blockID="896631934" value="" visible="true"/>
+</input>
+<output>
+<variable ID="iteration" blockID="1055307509" visible="true"/>
+<variable ID="element" blockID="1055307509" visible="true"/>
+<variable ID="896631934:output0" blockID="896631934" visible="true"/>
+</output>
+</variables>
+</workflow>
+</blocks>
+<links>
+<link dstBlockID="184281485" dstVarID="input sequence" srcBlockID="1895674979" srcVarID="output"/>
+<link dstBlockID="1055307509" dstVarID="array" srcBlockID="184281485" srcVarID="ROI"/>
+<link dstBlockID="1055307509" dstVarID="896631934:1060788839" srcBlockID="615641905" srcVarID="duplicated"/>
+</links>
+<variables>
+<input>
+<variable ID="1895674979:Input" blockID="1895674979" visible="true"/>
+<variable ID="1895674979:channel" blockID="1895674979" value="0" visible="false"/>
+<variable ID="1895674979:Manual thresholds" blockID="1895674979" value="9.0" visible="false"/>
+<variable ID="1895674979:Treat as percentiles" blockID="1895674979" value="false" visible="false"/>
+<variable ID="184281485:input sequence" blockID="184281485" visible="false"/>
+<variable ID="184281485:extract mode" blockID="184281485" value="SPECIFIC_LABEL" visible="false"/>
+<variable ID="184281485:value" blockID="184281485" value="1.0" visible="false"/>
+<variable ID="1055307509:array" blockID="1055307509" value="" visible="false"/>
+<variable ID="1055307509:896631934:Script" blockID="1055307509" value="importClass(Packages.icy.roi.ROI2DPoint)&#10;importClass(Packages.icy.roi.ROI2D)&#10;importClass(Packages.plugins.kernel.roi.descriptor.measure.ROIMassCenterDescriptorsPlugin)&#10;// Click on the button&#10;// to edit in a frame.&#10;point = ROIMassCenterDescriptorsPlugin.computeMassCenter(input0)&#10;roiPoint = new ROI2DPoint(point.getX(), point.getY())&#10;roiPoint.setZ(point.getZ())&#10;input1.addROI(roiPoint)&#10;output0 = input1" visible="false"/>
+<variable ID="1055307509:896631934:Add Input" blockID="1055307509" value="1" visible="false"/>
+<variable ID="1055307509:896631934:Add output" blockID="1055307509" value="0" visible="false"/>
+<variable ID="1055307509:896631934:input0" blockID="1055307509" value="" visible="false"/>
+<variable ID="615641905:sequence" blockID="615641905" visible="true"/>
+</input>
+<output>
+<variable ID="1895674979:output" blockID="1895674979" visible="false"/>
+<variable ID="1895674979:ROI" blockID="1895674979" visible="false"/>
+<variable ID="184281485:ROI" blockID="184281485" visible="false"/>
+<variable ID="1055307509:iteration" blockID="1055307509" visible="false"/>
+<variable ID="1055307509:element" blockID="1055307509" visible="false"/>
+<variable ID="615641905:duplicated" blockID="615641905" visible="true"/>
+</output>
+</variables>
+</workflow>
+<block ID="256048930" blockType="plugins.adufour.blocks.tools.sequence.ShowSequence" className="plugins.adufour.blocks.tools.sequence.ShowSequence" collapsed="false" definedName="Show sequence" height="61" keepsResults="true" width="328" xLocation="822" yLocation="168">
+<variables>
+<input>
+<variable ID="sequence" name="sequence" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+</blocks>
+<links>
+<link dstBlockID="161550976" dstVarID="1895674979:Input" srcBlockID="1402908103" srcVarID="input sequence"/>
+<link dstBlockID="161550976" dstVarID="615641905:sequence" srcBlockID="1986734378" srcVarID="input sequence"/>
+<link dstBlockID="256048930" dstVarID="sequence" srcBlockID="161550976" srcVarID="615641905:duplicated"/>
+</links>
+</protocol>
