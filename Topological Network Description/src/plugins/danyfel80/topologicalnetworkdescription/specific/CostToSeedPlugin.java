@@ -11,6 +11,7 @@ import plugins.adufour.blocks.lang.Block;
 import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
+import plugins.adufour.ezplug.EzVarDouble;
 import plugins.adufour.ezplug.EzVarSequence;
 import plugins.kernel.roi.roi2d.ROI2DPoint;
 
@@ -18,6 +19,7 @@ public class CostToSeedPlugin extends EzPlug implements Block {
 
 	private EzVarSequence inputOriginalSequence = new EzVarSequence("Sequence with seeds(ROIs)");
 	private EzVarSequence inputInvertedDistanceMapSequence = new EzVarSequence("Inverted Distance Map");
+	private EzVarDouble inputBaseDirectionWeightMultiplier = new EzVarDouble("Base direction weight multiplier");
 	private EzVarBoolean inputAddResult = new EzVarBoolean("Show Result Sequences", true);
 
 	private EzVarSequence outputCostToSeedSequence = new EzVarSequence("Cost To Seed");
@@ -25,9 +27,13 @@ public class CostToSeedPlugin extends EzPlug implements Block {
 
 	@Override
 	protected void initialize() {
-		addEzComponent(inputOriginalSequence);
+	  inputBaseDirectionWeightMultiplier.setValue(1.0);
+	  addEzComponent(inputOriginalSequence);
 		addEzComponent(inputInvertedDistanceMapSequence);
+		addEzComponent(inputBaseDirectionWeightMultiplier);
 		addEzComponent(inputAddResult);
+		
+		inputBaseDirectionWeightMultiplier.setMinValue(1.0);
 	}
 
 	@Override
@@ -57,8 +63,9 @@ public class CostToSeedPlugin extends EzPlug implements Block {
 		cpu.start();
 
 		// Get cost function to seeds
+		double baseDirectionWeightMultiplier = inputBaseDirectionWeightMultiplier.getValue();
 		@SuppressWarnings("unchecked")
-		CostToSeedCalculator ctsc = new CostToSeedCalculator(invertedDistanceMapSequence, (List<ROI2DPoint>) seeds);
+		CostToSeedCalculator ctsc = new CostToSeedCalculator(invertedDistanceMapSequence, (List<ROI2DPoint>) seeds, baseDirectionWeightMultiplier);
 		Sequence costFunctionToSeedSequence = ctsc.process();
 		Sequence minimumSpanningTreeSequence = ctsc.getMinimumSpaningTree();
 
@@ -81,8 +88,10 @@ public class CostToSeedPlugin extends EzPlug implements Block {
 
 	@Override
 	public void declareInput(VarList inputMap) {
+	  inputBaseDirectionWeightMultiplier.setValue(1.0);
 		inputMap.add(inputOriginalSequence.name, inputOriginalSequence.getVariable());
 		inputMap.add(inputInvertedDistanceMapSequence.name, inputInvertedDistanceMapSequence.getVariable());
+		inputMap.add(inputBaseDirectionWeightMultiplier.name, inputBaseDirectionWeightMultiplier.getVariable());
 		inputMap.add(inputAddResult.name, inputAddResult.getVariable());
 	}
 

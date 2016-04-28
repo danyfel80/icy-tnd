@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<protocol VERSION="4">
+<blocks>
+<block ID="1003015766" blockType="plugins.adufour.filtering.GaussianFilter" className="plugins.adufour.filtering.FilterToolbox" collapsed="false" definedName="Gaussian filter" height="170" keepsResults="true" width="320" xLocation="16" yLocation="8">
+<variables>
+<input>
+<variable ID="input" name="input" runtime="false" visible="true"/>
+<variable ID="filterX" name="sigma (x)" runtime="false" value="1.5" visible="true"/>
+<variable ID="filterY" name="sigma (y)" runtime="false" value="1.5" visible="true"/>
+<variable ID="filterZ" name="sigma (z)" runtime="false" value="1.5" visible="true"/>
+</input>
+<output>
+<variable ID="output" name="output" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="726440995" blockType="plugins.tprovoost.scripteditor.scriptblock.Javascript" className="plugins.tprovoost.scripteditor.scriptblock.Javascript" collapsed="true" definedName="Set name (Javascript)" height="537" keepsResults="true" width="606" xLocation="74" yLocation="204">
+<variables>
+<input>
+<variable ID="Script" name="Script" runtime="false" value="// Gauss set name&#10;input0.setName(input2.getName() + &quot;_Gauss(&quot; + input1 + &quot;)&quot;)" visible="true"/>
+<variable ID="Add Input" name="Add Input" runtime="false" value="2" visible="true"/>
+<variable ID="Add output" name="Add output" runtime="false" value="1" visible="true"/>
+<variable ID="input0" name="input0" runtime="false" type="icy.sequence.Sequence" visible="true"/>
+<variable ID="1300008662" name="input1" runtime="true" type="double" visible="true"/>
+<variable ID="1513970167" name="input2" runtime="true" type="icy.sequence.Sequence" visible="true"/>
+</input>
+<output>
+<variable ID="output0" name="output0" runtime="false" type="java.lang.Object" visible="true"/>
+<variable ID="1028339654" name="output1" runtime="true" type="java.lang.Object" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="585833630" blockType="plugins.adufour.blocks.tools.sequence.ShowSequence" className="plugins.adufour.blocks.tools.sequence.ShowSequence" collapsed="false" definedName="Show sequence" height="61" keepsResults="true" width="328" xLocation="76" yLocation="248">
+<variables>
+<input>
+<variable ID="sequence" name="sequence" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+</blocks>
+<links>
+<link dstBlockID="726440995" dstVarID="1300008662" srcBlockID="1003015766" srcVarID="filterX"/>
+<link dstBlockID="726440995" dstVarID="1513970167" srcBlockID="1003015766" srcVarID="input"/>
+<link dstBlockID="726440995" dstVarID="input0" srcBlockID="1003015766" srcVarID="output"/>
+<link dstBlockID="585833630" dstVarID="sequence" srcBlockID="726440995" srcVarID="input0" srcVarType="icy.sequence.Sequence"/>
+</links>
+</protocol>
