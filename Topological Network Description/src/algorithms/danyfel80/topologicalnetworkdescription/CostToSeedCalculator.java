@@ -163,6 +163,8 @@ public class CostToSeedCalculator {
 
               if (x >= 0 && x < sX && y >= 0 && y < sY && z >= 0 && z < sZ) {
                 Vector3d nDirection = new Vector3d(dx, dy, dz);
+                //System.out.print(ceDirection + "->");
+                //System.out.println(nDirection);
                 Vector3d nNDirection = new Vector3d();
                 nNDirection.normalize(nDirection);
                 double val = resultData[z][0][x + ysX];
@@ -171,21 +173,27 @@ public class CostToSeedCalculator {
 
                 double costMultiplier;
                 double angle;
-                if (ceDirection.x + ceDirection.y + ceDirection.z > 0) {
+                if (ceDirection.length() > 0.0) {
                   angle = ceDirection.angle(nDirection) / Math.PI;
                   costMultiplier = Math.pow(baseDirectionWeightMultiplier,
                       angle) * ceDirection.length();
+                  //System.out.println("non-zero(" + pX + "," + pY + "," + pZ +")");
                 } else {
-                  costMultiplier = new Vector3d(dx, dy, dz).length();
+                  costMultiplier = nDirection.length();
+                  ceNDirection.x = 0;
+                  ceNDirection.y = 0;
+                  ceNDirection.z = 0;
                   angle = 0;
+                  //System.out.println("zero(" + pX + "," + pY + "," + pZ +")");
                 }
                 costVal *= costMultiplier;
                 double cost = ceCost + costVal;
                 if (cost < val) {
                   Point5D point = new Point5D.Double(x, y, z, pT, pC);
-                  Vector3d direction = new Vector3d((nNDirection.x + ceNDirection.x) / 2,
-                      (nNDirection.y + ceNDirection.y) / 2,
-                      (nNDirection.y + ceNDirection.y) / 2);
+                  Vector3d direction = new Vector3d((nNDirection.x + ceNDirection.x) / 2.0,
+                      (nNDirection.y + ceNDirection.y) / 2.0,
+                      (nNDirection.z + ceNDirection.z) / 2.0);
+                  //System.out.println("new dir = " + direction);
                   direction.normalize();
                   direction.scale((1.0-angle)*ceDirection.length() + nDirection.length());
                   CostElement e = new CostElement(cost, point, direction);
