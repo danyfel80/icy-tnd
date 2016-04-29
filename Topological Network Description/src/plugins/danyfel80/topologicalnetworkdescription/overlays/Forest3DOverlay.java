@@ -102,7 +102,7 @@ public class Forest3DOverlay extends Overlay implements VtkPainter {
 
 		edgesActor = new vtkActor();
 		edgesActor.SetMapper(polyMapper);
-
+		edgesActor.GetProperty().SetLineWidth(2);
 	}
 
 	/*
