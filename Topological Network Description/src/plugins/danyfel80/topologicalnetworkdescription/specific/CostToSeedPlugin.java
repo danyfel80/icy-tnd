@@ -19,7 +19,8 @@ public class CostToSeedPlugin extends EzPlug implements Block {
 
 	private EzVarSequence inputOriginalSequence = new EzVarSequence("Sequence with seeds(ROIs)");
 	private EzVarSequence inputInvertedDistanceMapSequence = new EzVarSequence("Inverted Distance Map");
-	private EzVarDouble inputBaseDirectionWeightMultiplier = new EzVarDouble("Base direction weight multiplier");
+	private EzVarDouble inputLevelChangeWeightMultiplier = new EzVarDouble("Base level change multiplier");
+	private EzVarDouble inputDirectionChangeWeightMultiplier = new EzVarDouble("Base direction change multiplier");
 	private EzVarBoolean inputAddResult = new EzVarBoolean("Show Result Sequences", true);
 
 	private EzVarSequence outputCostToSeedSequence = new EzVarSequence("Cost To Seed");
@@ -27,13 +28,16 @@ public class CostToSeedPlugin extends EzPlug implements Block {
 
 	@Override
 	protected void initialize() {
-	  inputBaseDirectionWeightMultiplier.setValue(1.0);
+		inputLevelChangeWeightMultiplier.setValue(2.0);
+		inputDirectionChangeWeightMultiplier.setValue(1.0);
 	  addEzComponent(inputOriginalSequence);
 		addEzComponent(inputInvertedDistanceMapSequence);
-		addEzComponent(inputBaseDirectionWeightMultiplier);
+		addEzComponent(inputLevelChangeWeightMultiplier);
+		addEzComponent(inputDirectionChangeWeightMultiplier);
 		addEzComponent(inputAddResult);
 		
-		inputBaseDirectionWeightMultiplier.setMinValue(1.0);
+		inputLevelChangeWeightMultiplier.setMinValue(0.0);
+		inputDirectionChangeWeightMultiplier.setMinValue(0.0);
 	}
 
 	@Override
@@ -63,9 +67,10 @@ public class CostToSeedPlugin extends EzPlug implements Block {
 		cpu.start();
 
 		// Get cost function to seeds
-		double baseDirectionWeightMultiplier = inputBaseDirectionWeightMultiplier.getValue();
+		double levelChangeWeightMultiplier = inputLevelChangeWeightMultiplier.getValue();
+		double directionChangeWeightMultiplier = inputDirectionChangeWeightMultiplier.getValue();
 		@SuppressWarnings("unchecked")
-		CostToSeedCalculator ctsc = new CostToSeedCalculator(invertedDistanceMapSequence, (List<ROI2DPoint>) seeds, baseDirectionWeightMultiplier);
+		CostToSeedCalculator ctsc = new CostToSeedCalculator(invertedDistanceMapSequence, (List<ROI2DPoint>) seeds, levelChangeWeightMultiplier, directionChangeWeightMultiplier);
 		Sequence costFunctionToSeedSequence = ctsc.process();
 		Sequence minimumSpanningTreeSequence = ctsc.getMinimumSpaningTree();
 
@@ -88,10 +93,12 @@ public class CostToSeedPlugin extends EzPlug implements Block {
 
 	@Override
 	public void declareInput(VarList inputMap) {
-	  inputBaseDirectionWeightMultiplier.setValue(1.0);
+		inputLevelChangeWeightMultiplier.setValue(2.0);
+		inputDirectionChangeWeightMultiplier.setValue(1.0);
 		inputMap.add(inputOriginalSequence.name, inputOriginalSequence.getVariable());
 		inputMap.add(inputInvertedDistanceMapSequence.name, inputInvertedDistanceMapSequence.getVariable());
-		inputMap.add(inputBaseDirectionWeightMultiplier.name, inputBaseDirectionWeightMultiplier.getVariable());
+		inputMap.add(inputLevelChangeWeightMultiplier.name, inputLevelChangeWeightMultiplier.getVariable());
+		inputMap.add(inputDirectionChangeWeightMultiplier.name, inputDirectionChangeWeightMultiplier.getVariable());
 		inputMap.add(inputAddResult.name, inputAddResult.getVariable());
 	}
 

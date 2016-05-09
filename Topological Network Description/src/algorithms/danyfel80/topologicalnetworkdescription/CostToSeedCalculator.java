@@ -24,16 +24,12 @@ public class CostToSeedCalculator {
   public static class CostElement implements Comparable<CostElement> {
     private final double   cost;
     private final Point5D  point;
-    /**
-     * direction and force (norm of vector)
-     */
     private final Vector3d direction;
 
     public CostElement(double cost, Point5D point, Vector3d direction) {
       this.cost = cost;
       this.point = point;
       this.direction = direction;
-
     }
 
     public double getCost() {
@@ -43,12 +39,9 @@ public class CostToSeedCalculator {
     public Point5D getPoint() {
       return point;
     }
-
-    /**
-     * @return direction and force of the element. (force = direction.length())
-     */
+    
     public Vector3d getDirection() {
-      return direction;
+    	return direction;
     }
 
     @Override
@@ -66,16 +59,19 @@ public class CostToSeedCalculator {
   private List<ROI2DPoint> seeds;
   private Sequence         result;
   private Sequence         minimumSpaningTree;
-  private double           baseDirectionWeightMultiplier;
+  private double           levelChangeWeightMultiplier;
+  private double					 directionChangeWeightMultiplier;
 
   public CostToSeedCalculator(Sequence invertedDistanceMapSequence,
-      List<ROI2DPoint> seeds, double baseDirectionWeightMultiplier) {
+      List<ROI2DPoint> seeds, double levelChangeWeightMultiplier, 
+      double directionChangeWeightMultiplier) {
     super();
     this.invertedDistanceMapSequence = invertedDistanceMapSequence;
     this.seeds = seeds;
     this.result = null;
     this.minimumSpaningTree = null;
-    this.baseDirectionWeightMultiplier = baseDirectionWeightMultiplier;
+    this.levelChangeWeightMultiplier = levelChangeWeightMultiplier;
+    this.directionChangeWeightMultiplier = directionChangeWeightMultiplier;
   }
 
   public Sequence process() {
@@ -86,7 +82,7 @@ public class CostToSeedCalculator {
 
     // Construct initial result with costs -1
     result = new Sequence(
-        invertedDistanceMapSequence.getName() + "_CostFunction(D = " + baseDirectionWeightMultiplier + ")");
+        invertedDistanceMapSequence.getName() + "_CostFunction(L = " + levelChangeWeightMultiplier + ")");
     minimumSpaningTree = new Sequence(
         invertedDistanceMapSequence.getName() + "_MinimumSpanningTree");
     invertedDistanceMapSequence = SequenceUtil
@@ -116,6 +112,7 @@ public class CostToSeedCalculator {
           .getDataXYCZAsDouble(0);
       double[][][] resultData = result.getDataXYCZAsDouble(0);
       int[][][] mstData = minimumSpaningTree.getDataXYCZAsInt(0);
+      boolean[][] visited = new boolean[sZ][sX*sY];
 
       int pX, pY, pZ, pT, pC;
 
@@ -126,8 +123,10 @@ public class CostToSeedCalculator {
         pX = (int) point.getX();
         pY = (int) point.getY();
         pZ = (int) point.getZ();
+        
         double cost = 0.0;
-        CostElement e = new CostElement(cost, point, new Vector3d(0, 0, 0));
+        Vector3d direction = new Vector3d(0, 0, 0);
+        CostElement e = new CostElement(cost, point, direction);
         q.add(e);
         resultData[pZ][0][pX + pY * sX] = 0;
         mstData[pZ][0][pX + pY * sX] = pX;
@@ -144,11 +143,15 @@ public class CostToSeedCalculator {
         pT = (int) cePoint.getT();
         pC = (int) cePoint.getC();
 
+        if (visited[pZ][pX+pY*sX])
+        	continue;
+        
+        visited[pZ][pX+pY*sX] = true;
+        
         double ceCost = ce.getCost();
+        double ceHeight = 1.0/distanceData[pZ][0][pX+pY*sX];
         Vector3d ceDirection = ce.getDirection();
-        Vector3d ceNDirection = new Vector3d();
-        ceNDirection.normalize(ceDirection);
-
+        
         // Check every neighbor of cePoint
         for (int dx = -1; dx <= 1; dx++) {
           x = pX + dx;
@@ -160,42 +163,23 @@ public class CostToSeedCalculator {
               if (dx == 0 && dy == 0 && dz == 0) {
                 continue;
               }
-
+              
               if (x >= 0 && x < sX && y >= 0 && y < sY && z >= 0 && z < sZ) {
-                Vector3d nDirection = new Vector3d(dx, dy, dz);
-                //System.out.print(ceDirection + "->");
-                //System.out.println(nDirection);
-                Vector3d nNDirection = new Vector3d();
-                nNDirection.normalize(nDirection);
-                double val = resultData[z][0][x + ysX];
-                double costVal = distanceData[z][0][x + ysX];
-                // take direction into account
-
-                double costMultiplier;
-                double angle;
-                if (ceDirection.length() > 0.0) {
-                  angle = ceDirection.angle(nDirection) / Math.PI;
-                  costMultiplier = Math.pow(baseDirectionWeightMultiplier,
-                      angle) * ceDirection.length();
-                  //System.out.println("non-zero(" + pX + "," + pY + "," + pZ +")");
-                } else {
-                  costMultiplier = nDirection.length();
-                  ceNDirection.x = 0;
-                  ceNDirection.y = 0;
-                  ceNDirection.z = 0;
-                  angle = 0;
-                  //System.out.println("zero(" + pX + "," + pY + "," + pZ +")");
-                }
-                costVal *= costMultiplier;
-                double cost = ceCost + costVal;
-                if (cost < val) {
+                double currCost = resultData[z][0][x + ysX];
+                double pHeight = distanceData[z][0][x + ysX];
+                Vector3d pDirection = new Vector3d(dx, dy, dz);
+                
+                double heightDiff = Math.abs(ceHeight - 1.0/pHeight);
+                double angleDiff = pDirection.angle(ceDirection)/Math.PI;
+                angleDiff = ceDirection.length() > 0? angleDiff: 0.0;
+                Vector3d direction = new Vector3d(pDirection);
+                direction.scale(directionChangeWeightMultiplier*angleDiff);
+                direction.add(ceDirection);
+                
+                double cost = ceCost + pHeight * (1.0+levelChangeWeightMultiplier*heightDiff) * (pDirection.length());
+                if (cost < currCost) {
                   Point5D point = new Point5D.Double(x, y, z, pT, pC);
-                  Vector3d direction = new Vector3d((nNDirection.x + ceNDirection.x) / 2.0,
-                      (nNDirection.y + ceNDirection.y) / 2.0,
-                      (nNDirection.z + ceNDirection.z) / 2.0);
-                  //System.out.println("new dir = " + direction);
-                  direction.normalize();
-                  direction.scale((1.0-angle)*ceDirection.length() + nDirection.length());
+                  
                   CostElement e = new CostElement(cost, point, direction);
                   q.add(e);
                   resultData[z][0][x + ysX] = cost;

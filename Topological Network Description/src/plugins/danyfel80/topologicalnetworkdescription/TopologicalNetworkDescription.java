@@ -33,8 +33,10 @@ public class TopologicalNetworkDescription extends EzPlug {
       "Minimum Labeling Radius");
   private EzVarDouble   inLabelingRadiusScale           = new EzVarDouble(
       "Labeling Radius Scale");
-  private EzVarDouble   inBaseDirectionWeightMultiplier = new EzVarDouble(
-      "Base direction weight multiplier");
+  private EzVarDouble   inLevelChangeWeightMultiplier = new EzVarDouble(
+      "Level change weight multiplier");
+  private EzVarDouble   inDirectionChangeWeightMultiplier = new EzVarDouble(
+      "Direction change weight multiplier");
 
   @Override
   protected void initialize() {
@@ -44,10 +46,14 @@ public class TopologicalNetworkDescription extends EzPlug {
     inMinLabelingRadius.setMinValue(2);
     inLabelingRadiusScale.setValue(2.5);
     inLabelingRadiusScale.setMinValue(0.1);
-    inBaseDirectionWeightMultiplier.setValue(1.0);
+    inLevelChangeWeightMultiplier.setValue(2.0);
+    inDirectionChangeWeightMultiplier.setValue(1.0);
     addEzComponent(sequenceIn);
     addEzComponent(thresholdIn);
-    inBaseDirectionWeightMultiplier.setMinValue(1.0);
+    addEzComponent(inLevelChangeWeightMultiplier);
+    addEzComponent(inDirectionChangeWeightMultiplier);
+    inLevelChangeWeightMultiplier.setMinValue(0.0);
+    inDirectionChangeWeightMultiplier.setMinValue(0.0);
   }
 
   @Override
@@ -88,9 +94,10 @@ public class TopologicalNetworkDescription extends EzPlug {
         "Threshold Execution time : " + cpu.getCPUElapsedTimeSec() + "s.");
     // Get segmented image sequence
     cpu.start();
+    Sequence ccLabelsSequence = new Sequence(threshedSequence.getName() + "_LabeledConnectedComponents");
     @SuppressWarnings("unchecked")
     Sequence segmentedSequence = RegionGrowingSegmenter
-        .process(threshedSequence, (List<ROI2DPoint>) seeds);
+        .process(threshedSequence, (List<ROI2DPoint>) seeds, ccLabelsSequence);
     cpu.stop();
     addSequence(segmentedSequence);
     // MessageDialog.showDialog("Result Segmentation", "Segmentation Execution
@@ -121,7 +128,7 @@ public class TopologicalNetworkDescription extends EzPlug {
     @SuppressWarnings("unchecked")
     CostToSeedCalculator ctsc = new CostToSeedCalculator(
         invertedDistanceMapSequence, (List<ROI2DPoint>) seeds,
-        inBaseDirectionWeightMultiplier.getValue());
+        inLevelChangeWeightMultiplier.getValue(), inDirectionChangeWeightMultiplier.getValue());
     Sequence costFunctionToSeedSequence = ctsc.process();
     Sequence minimumSpanningTreeSequence = ctsc.getMinimumSpaningTree();
     cpu.stop();

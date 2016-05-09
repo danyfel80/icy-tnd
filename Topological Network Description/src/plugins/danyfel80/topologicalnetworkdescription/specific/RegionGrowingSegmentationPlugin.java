@@ -55,12 +55,14 @@ public class RegionGrowingSegmentationPlugin extends EzPlug implements Block {
 		cpu.start();
 
 		// Get segmented image sequence
+		Sequence ccLabelsSequence  = new Sequence(threshedSequence.getName() + "_LabeledConnectedComponents");
 		@SuppressWarnings("unchecked")
-		Sequence segmentedSequence = RegionGrowingSegmenter.process(threshedSequence, (List<ROI2DPoint>) seeds);
+		Sequence segmentedSequence = RegionGrowingSegmenter.process(threshedSequence, (List<ROI2DPoint>) seeds, ccLabelsSequence);
 
 		cpu.stop();
 		if (inputAddResult.getValue()) {
 			addSequence(segmentedSequence);
+			addSequence(ccLabelsSequence);
 		}
 		outputSequence.setValue(segmentedSequence);
 		// MessageDialog.showDialog("Result Segmentation", "Segmentation Execution

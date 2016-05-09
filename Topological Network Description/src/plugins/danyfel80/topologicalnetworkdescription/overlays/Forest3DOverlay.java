@@ -11,6 +11,7 @@ import javax.vecmath.Point3i;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
+import icy.image.colormap.GlowColorMap;
 import icy.painter.Overlay;
 import icy.painter.VtkPainter;
 import vtk.vtkActor;
@@ -72,7 +73,10 @@ public class Forest3DOverlay extends Overlay implements VtkPainter {
 			edges.InsertNextCell(line);
 			int dpth = depthMap.get(pT);
 			dpth = (int) Math.round(255.0 * ((double) dpth / maxDepth));
-			Color c = new Color(dpth, dpth, dpth);
+			GlowColorMap colormap = new GlowColorMap(true);
+			Color c = colormap.getColor(dpth);
+			//Color c = new Color(dpth, dpth, dpth);
+			//Color c = new Color(Random.nextInt(256),Random.nextInt(256),Random.nextInt(256));
 			final byte r = (byte) c.getRed();
 			final byte g = (byte) c.getGreen();
 			final byte b = (byte) c.getBlue();
@@ -102,6 +106,7 @@ public class Forest3DOverlay extends Overlay implements VtkPainter {
 
 		edgesActor = new vtkActor();
 		edgesActor.SetMapper(polyMapper);
+		edgesActor.GetProperty().SetLineWidth(4);
 
 	}
 
