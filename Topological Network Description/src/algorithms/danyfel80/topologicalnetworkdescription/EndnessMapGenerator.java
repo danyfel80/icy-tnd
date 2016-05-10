@@ -8,7 +8,7 @@ import icy.type.DataType;
 /**
  * @author Daniel Felipe Gonzalez Obando
  */
-public class EndnessCalculator {
+public class EndnessMapGenerator {
 
 	public static Sequence process(Sequence squaredDistanceMapSequence, Sequence costFunctionToSeedSequence) {
 		int sizeX = squaredDistanceMapSequence.getSizeX();

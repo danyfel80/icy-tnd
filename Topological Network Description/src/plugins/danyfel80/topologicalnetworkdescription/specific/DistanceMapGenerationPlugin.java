@@ -1,6 +1,6 @@
 package plugins.danyfel80.topologicalnetworkdescription.specific;
 
-import algorithms.danyfel80.topologicalnetworkdescription.SegmentDistanceCalcultator;
+import algorithms.danyfel80.topologicalnetworkdescription.DistanceMapGenerator;
 import icy.gui.dialog.MessageDialog;
 import icy.sequence.Sequence;
 import icy.system.profile.CPUMonitor;
@@ -10,7 +10,7 @@ import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarSequence;
 
-public class SegmentationDistancePlugin extends EzPlug implements Block {
+public class DistanceMapGenerationPlugin extends EzPlug implements Block {
 
 	private EzVarSequence inputSegmentedSequence = new EzVarSequence("Segmented Sequence");
 	private EzVarBoolean inputAddResult = new EzVarBoolean("Show Result Sequences", true);
@@ -40,7 +40,7 @@ public class SegmentationDistancePlugin extends EzPlug implements Block {
 		cpu.start();
 
 		// Get distance map sequence
-		SegmentDistanceCalcultator sdc = new SegmentDistanceCalcultator(segmentedSequence);
+		DistanceMapGenerator sdc = new DistanceMapGenerator(segmentedSequence);
 		sdc.process();
 		Sequence squaredDistanceMapSequence = sdc.getSquaredDistanceMap();
 		Sequence distanceMapSequence = sdc.getDistanceMap();

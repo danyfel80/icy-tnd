@@ -19,7 +19,7 @@ import plugins.kernel.roi.roi2d.ROI2DPoint;
  * 
  * @author Daniel Felipe Gonzalez Obando
  */
-public class CostToSeedCalculator {
+public class CostToSeedMapGenerator {
 
   public static class CostElement implements Comparable<CostElement> {
     private final double   cost;
@@ -62,7 +62,7 @@ public class CostToSeedCalculator {
   private double           levelChangeWeightMultiplier;
   private double					 directionChangeWeightMultiplier;
 
-  public CostToSeedCalculator(Sequence invertedDistanceMapSequence,
+  public CostToSeedMapGenerator(Sequence invertedDistanceMapSequence,
       List<ROI2DPoint> seeds, double levelChangeWeightMultiplier, 
       double directionChangeWeightMultiplier) {
     super();

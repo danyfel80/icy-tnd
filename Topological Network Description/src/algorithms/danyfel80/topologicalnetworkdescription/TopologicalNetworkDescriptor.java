@@ -26,7 +26,7 @@ import icy.type.point.Point5D;
  * @author Daniel Felipe Gonzalez Obando
  *
  */
-public class NetworkDescriptionConstructor {
+public class TopologicalNetworkDescriptor {
 
 	public static class CostElement implements Comparable<CostElement> {
 		private final Double cost;
@@ -72,7 +72,7 @@ public class NetworkDescriptionConstructor {
 	private int minLabelingSphereRadius;
 	private double radiusScale = 2.5;
 
-	public NetworkDescriptionConstructor(Sequence endnessSequence, Sequence minimumSpaningTree,
+	public TopologicalNetworkDescriptor(Sequence endnessSequence, Sequence minimumSpaningTree,
 	    Sequence squaredDistanceMap, int minLabelingSphereRadius, double radiusScale) {
 		this.endnessSequence = endnessSequence;
 		this.minimumSpanningTree = minimumSpaningTree;

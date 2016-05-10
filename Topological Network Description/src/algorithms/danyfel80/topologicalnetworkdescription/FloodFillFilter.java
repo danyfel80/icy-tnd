@@ -19,7 +19,7 @@ import plugins.kernel.roi.roi2d.ROI2DPoint;
  * 
  * @author Daniel Felipe Gonzalez Obando
  */
-public class RegionGrowingSegmenter {
+public class FloodFillFilter {
 
 	public static Sequence process(Sequence thresholdedSequence, List<ROI2DPoint> seeds, Sequence labelsSequence) {
 		thresholdedSequence = SequenceUtil.convertToType(thresholdedSequence, DataType.DOUBLE, false);

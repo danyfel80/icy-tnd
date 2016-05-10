@@ -11,7 +11,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 import algorithms.danyfel80.networktopology.analysis.GraphAnalysis;
-import algorithms.danyfel80.topologicalnetworkdescription.NetworkDescriptionConstructor;
+import algorithms.danyfel80.topologicalnetworkdescription.TopologicalNetworkDescriptor;
 import icy.gui.dialog.MessageDialog;
 import icy.sequence.Sequence;
 import icy.system.profile.CPUMonitor;
@@ -26,7 +26,7 @@ import plugins.adufour.vars.lang.Var;
 import plugins.danyfel80.topologicalnetworkdescription.overlays.Forest3DOverlay;
 import plugins.kernel.roi.roi2d.ROI2DLine;
 
-public class NetworkDescriptionPlugin extends EzPlug implements Block {
+public class TopologicalNetworkDescriptionPlugin extends EzPlug implements Block {
 
 	private EzVarSequence inputOriginalSequence = new EzVarSequence("Sequence with seeds(ROIs)");
 	private EzVarSequence inputEndnessSequence = new EzVarSequence("Endness Map");
@@ -79,7 +79,7 @@ public class NetworkDescriptionPlugin extends EzPlug implements Block {
 		cpu.start();
 
 		// Get sequence description graph
-		NetworkDescriptionConstructor ndc = new NetworkDescriptionConstructor(endnessMapSequence,
+		TopologicalNetworkDescriptor ndc = new TopologicalNetworkDescriptor(endnessMapSequence,
 		    minimumSpanningTreeMapSequence, distanceMapSequence, inputMinRadius.getValue(), inputRadiusScale.getValue());
 		Sequence skeletonSequence = ndc.process(); // skeleton
 		Sequence labelsSequence = ndc.getLabelSequence();

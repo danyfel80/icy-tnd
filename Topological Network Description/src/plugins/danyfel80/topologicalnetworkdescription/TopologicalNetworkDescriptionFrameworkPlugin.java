@@ -2,12 +2,12 @@ package plugins.danyfel80.topologicalnetworkdescription;
 
 import java.util.List;
 
-import algorithms.danyfel80.topologicalnetworkdescription.CostToSeedCalculator;
-import algorithms.danyfel80.topologicalnetworkdescription.EndnessCalculator;
-import algorithms.danyfel80.topologicalnetworkdescription.NetworkDescriptionConstructor;
-import algorithms.danyfel80.topologicalnetworkdescription.RegionGrowingSegmenter;
-import algorithms.danyfel80.topologicalnetworkdescription.SegmentDistanceCalcultator;
-import algorithms.danyfel80.topologicalnetworkdescription.Thresholder;
+import algorithms.danyfel80.topologicalnetworkdescription.CostToSeedMapGenerator;
+import algorithms.danyfel80.topologicalnetworkdescription.EndnessMapGenerator;
+import algorithms.danyfel80.topologicalnetworkdescription.TopologicalNetworkDescriptor;
+import algorithms.danyfel80.topologicalnetworkdescription.FloodFillFilter;
+import algorithms.danyfel80.topologicalnetworkdescription.DistanceMapGenerator;
+import algorithms.danyfel80.topologicalnetworkdescription.ThresholdingSegmenter;
 import icy.gui.dialog.MessageDialog;
 import icy.roi.ROI;
 import icy.sequence.Sequence;
@@ -23,7 +23,7 @@ import plugins.kernel.roi.roi2d.ROI2DPoint;
  * 
  * @author Daniel Felipe Gonzalez Obando
  */
-public class TopologicalNetworkDescription extends EzPlug {
+public class TopologicalNetworkDescriptionFrameworkPlugin extends EzPlug {
 
   private EzVarSequence sequenceIn                      = new EzVarSequence(
       "Sequence");
@@ -84,7 +84,7 @@ public class TopologicalNetworkDescription extends EzPlug {
 
     // Get threshold image sequence
     cpu.start();
-    Sequence threshedSequence = Thresholder.process(sequence, threshold);
+    Sequence threshedSequence = ThresholdingSegmenter.process(sequence, threshold);
     cpu.stop();
     addSequence(threshedSequence);
     // MessageDialog.showDialog("Result Threshold", "Threshold Execution time :
@@ -96,7 +96,7 @@ public class TopologicalNetworkDescription extends EzPlug {
     cpu.start();
     Sequence ccLabelsSequence = new Sequence(threshedSequence.getName() + "_LabeledConnectedComponents");
     @SuppressWarnings("unchecked")
-    Sequence segmentedSequence = RegionGrowingSegmenter
+    Sequence segmentedSequence = FloodFillFilter
         .process(threshedSequence, (List<ROI2DPoint>) seeds, ccLabelsSequence);
     cpu.stop();
     addSequence(segmentedSequence);
@@ -108,7 +108,7 @@ public class TopologicalNetworkDescription extends EzPlug {
 
     // Get distance map sequence
     cpu.start();
-    SegmentDistanceCalcultator sdc = new SegmentDistanceCalcultator(
+    DistanceMapGenerator sdc = new DistanceMapGenerator(
         segmentedSequence);
     Sequence squaredDistanceMapSequence = sdc.process();
     Sequence distanceMapSequence = sdc.getDistanceMap();
@@ -126,7 +126,7 @@ public class TopologicalNetworkDescription extends EzPlug {
     // Get cost function to seeds
     cpu.start();
     @SuppressWarnings("unchecked")
-    CostToSeedCalculator ctsc = new CostToSeedCalculator(
+    CostToSeedMapGenerator ctsc = new CostToSeedMapGenerator(
         invertedDistanceMapSequence, (List<ROI2DPoint>) seeds,
         inLevelChangeWeightMultiplier.getValue(), inDirectionChangeWeightMultiplier.getValue());
     Sequence costFunctionToSeedSequence = ctsc.process();
@@ -143,7 +143,7 @@ public class TopologicalNetworkDescription extends EzPlug {
 
     // Get endness image
     cpu.start();
-    Sequence endnessSequence = EndnessCalculator
+    Sequence endnessSequence = EndnessMapGenerator
         .process(squaredDistanceMapSequence, costFunctionToSeedSequence);
     cpu.stop();
     addSequence(endnessSequence);
@@ -154,7 +154,7 @@ public class TopologicalNetworkDescription extends EzPlug {
 
     // Get sequence description graph
     cpu.start();
-    NetworkDescriptionConstructor ndc = new NetworkDescriptionConstructor(
+    TopologicalNetworkDescriptor ndc = new TopologicalNetworkDescriptor(
         endnessSequence, minimumSpanningTreeSequence,
         squaredDistanceMapSequence, inMinLabelingRadius.getValue(),
         inLabelingRadiusScale.getValue());

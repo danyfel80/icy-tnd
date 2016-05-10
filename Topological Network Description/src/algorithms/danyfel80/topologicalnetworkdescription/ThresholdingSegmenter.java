@@ -10,7 +10,7 @@ import icy.type.DataType;
  * 
  * @author Daniel Felipe Gonzalez Obando
  */
-public class Thresholder {
+public class ThresholdingSegmenter {
 
 	/**
 	 * @param sequence

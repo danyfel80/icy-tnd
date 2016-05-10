@@ -2,7 +2,7 @@ package plugins.danyfel80.topologicalnetworkdescription.specific;
 
 import java.util.List;
 
-import algorithms.danyfel80.topologicalnetworkdescription.CostToSeedCalculator;
+import algorithms.danyfel80.topologicalnetworkdescription.CostToSeedMapGenerator;
 import icy.gui.dialog.MessageDialog;
 import icy.roi.ROI;
 import icy.sequence.Sequence;
@@ -15,7 +15,7 @@ import plugins.adufour.ezplug.EzVarDouble;
 import plugins.adufour.ezplug.EzVarSequence;
 import plugins.kernel.roi.roi2d.ROI2DPoint;
 
-public class CostToSeedPlugin extends EzPlug implements Block {
+public class CostToSeedMapGenerationPlugin extends EzPlug implements Block {
 
 	private EzVarSequence inputOriginalSequence = new EzVarSequence("Sequence with seeds(ROIs)");
 	private EzVarSequence inputInvertedDistanceMapSequence = new EzVarSequence("Inverted Distance Map");
@@ -70,7 +70,7 @@ public class CostToSeedPlugin extends EzPlug implements Block {
 		double levelChangeWeightMultiplier = inputLevelChangeWeightMultiplier.getValue();
 		double directionChangeWeightMultiplier = inputDirectionChangeWeightMultiplier.getValue();
 		@SuppressWarnings("unchecked")
-		CostToSeedCalculator ctsc = new CostToSeedCalculator(invertedDistanceMapSequence, (List<ROI2DPoint>) seeds, levelChangeWeightMultiplier, directionChangeWeightMultiplier);
+		CostToSeedMapGenerator ctsc = new CostToSeedMapGenerator(invertedDistanceMapSequence, (List<ROI2DPoint>) seeds, levelChangeWeightMultiplier, directionChangeWeightMultiplier);
 		Sequence costFunctionToSeedSequence = ctsc.process();
 		Sequence minimumSpanningTreeSequence = ctsc.getMinimumSpaningTree();
 

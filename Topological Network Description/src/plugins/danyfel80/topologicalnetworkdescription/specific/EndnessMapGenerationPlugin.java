@@ -1,6 +1,6 @@
 package plugins.danyfel80.topologicalnetworkdescription.specific;
 
-import algorithms.danyfel80.topologicalnetworkdescription.EndnessCalculator;
+import algorithms.danyfel80.topologicalnetworkdescription.EndnessMapGenerator;
 import icy.gui.dialog.MessageDialog;
 import icy.sequence.Sequence;
 import icy.system.profile.CPUMonitor;
@@ -10,7 +10,7 @@ import plugins.adufour.ezplug.EzPlug;
 import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarSequence;
 
-public class SegmentationEndnessPlugin extends EzPlug implements Block {
+public class EndnessMapGenerationPlugin extends EzPlug implements Block {
 
 	private EzVarSequence inputCostToSeedSequence = new EzVarSequence("Cost To Seed");
 	private EzVarSequence inputSquaredDistanceMapSequence = new EzVarSequence("Squared Distance Map");
@@ -43,7 +43,7 @@ public class SegmentationEndnessPlugin extends EzPlug implements Block {
 		cpu.start();
 
 		// Get endness image
-		Sequence endnessSequence = EndnessCalculator.process(squaredDistanceMapSequence, costFunctionToSeedSequence);
+		Sequence endnessSequence = EndnessMapGenerator.process(squaredDistanceMapSequence, costFunctionToSeedSequence);
 
 		cpu.stop();
 		if (inputAddResult.getValue()) {

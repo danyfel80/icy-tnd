@@ -2,7 +2,7 @@ package plugins.danyfel80.topologicalnetworkdescription.specific;
 
 import java.util.List;
 
-import algorithms.danyfel80.topologicalnetworkdescription.RegionGrowingSegmenter;
+import algorithms.danyfel80.topologicalnetworkdescription.FloodFillFilter;
 import icy.gui.dialog.MessageDialog;
 import icy.roi.ROI;
 import icy.sequence.Sequence;
@@ -14,7 +14,7 @@ import plugins.adufour.ezplug.EzVarBoolean;
 import plugins.adufour.ezplug.EzVarSequence;
 import plugins.kernel.roi.roi2d.ROI2DPoint;
 
-public class RegionGrowingSegmentationPlugin extends EzPlug implements Block {
+public class FloodFillFilteringPlugin extends EzPlug implements Block {
 
 	private EzVarSequence inputThresholdedSequence = new EzVarSequence("Thresholded Sequence");
 	private EzVarSequence inputSequence = new EzVarSequence("Sequence with seeds(ROIs)");
@@ -57,7 +57,7 @@ public class RegionGrowingSegmentationPlugin extends EzPlug implements Block {
 		// Get segmented image sequence
 		Sequence ccLabelsSequence  = new Sequence(threshedSequence.getName() + "_LabeledConnectedComponents");
 		@SuppressWarnings("unchecked")
-		Sequence segmentedSequence = RegionGrowingSegmenter.process(threshedSequence, (List<ROI2DPoint>) seeds, ccLabelsSequence);
+		Sequence segmentedSequence = FloodFillFilter.process(threshedSequence, (List<ROI2DPoint>) seeds, ccLabelsSequence);
 
 		cpu.stop();
 		if (inputAddResult.getValue()) {

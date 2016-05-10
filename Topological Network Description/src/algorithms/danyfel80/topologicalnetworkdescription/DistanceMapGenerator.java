@@ -10,14 +10,14 @@ import plugins.vannary.morphomaths.MorphOp;
  * 
  * @author Daniel Felipe Gonzalez Obando
  */
-public class SegmentDistanceCalcultator {
+public class DistanceMapGenerator {
 
 	private Sequence segmentedSequence;
 	private Sequence distanceMap;
 	private Sequence squaredDistanceMap;
 	private Sequence invertedSquaredDistanceMap;
 
-	public SegmentDistanceCalcultator(Sequence segmentedSequence) {
+	public DistanceMapGenerator(Sequence segmentedSequence) {
 		this.segmentedSequence = segmentedSequence;
 		this.squaredDistanceMap = null;
 		this.distanceMap = null;

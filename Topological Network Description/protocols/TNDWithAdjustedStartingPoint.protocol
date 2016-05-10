@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <protocol VERSION="4">
 <blocks>
-<block ID="1959052755" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.RegionGrowingSegmentationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.RegionGrowingSegmentationPlugin" collapsed="false" definedName="Region growing segmentation plugin" height="134" keepsResults="true" width="381" xLocation="29" yLocation="24">
+<block ID="1959052755" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.FloodFillFilteringPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.FloodFillFilteringPlugin" collapsed="false" definedName="Region growing segmentation plugin" height="134" keepsResults="true" width="381" xLocation="29" yLocation="24">
 <variables>
 <input>
 <variable ID="Sequence with seeds(ROIs)" name="Sequence with seeds(ROIs)" runtime="false" visible="true"/>
@@ -13,7 +13,7 @@
 </output>
 </variables>
 </block>
-<block ID="267426958" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.SegmentationDistancePlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.SegmentationDistancePlugin" collapsed="false" definedName="Segmentation distance plugin" height="156" keepsResults="true" width="417" xLocation="21" yLocation="173">
+<block ID="267426958" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.DistanceMapGenerationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.DistanceMapGenerationPlugin" collapsed="false" definedName="Segmentation distance plugin" height="156" keepsResults="true" width="417" xLocation="21" yLocation="173">
 <variables>
 <input>
 <variable ID="Segmented Sequence" name="Segmented Sequence" runtime="false" visible="true"/>
@@ -45,7 +45,7 @@
 <output/>
 </variables>
 </block>
-<block ID="725681322" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedPlugin" collapsed="false" definedName="Cost to seed plugin" height="156" keepsResults="true" width="390" xLocation="589" yLocation="24">
+<block ID="725681322" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedMapGenerationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedMapGenerationPlugin" collapsed="false" definedName="Cost to seed plugin" height="156" keepsResults="true" width="390" xLocation="589" yLocation="24">
 <variables>
 <input>
 <variable ID="Sequence with seeds(ROIs)" name="Sequence with seeds(ROIs)" runtime="false" visible="true"/>
@@ -58,7 +58,7 @@
 </output>
 </variables>
 </block>
-<block ID="1246910087" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.SegmentationEndnessPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.SegmentationEndnessPlugin" collapsed="false" definedName="Segmentation endness plugin" height="134" keepsResults="true" width="358" xLocation="623" yLocation="224">
+<block ID="1246910087" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.EndnessMapGenerationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.EndnessMapGenerationPlugin" collapsed="false" definedName="Segmentation endness plugin" height="134" keepsResults="true" width="358" xLocation="623" yLocation="224">
 <variables>
 <input>
 <variable ID="Cost To Seed" name="Cost To Seed" runtime="false" visible="true"/>
@@ -70,7 +70,7 @@
 </output>
 </variables>
 </block>
-<block ID="328954946" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.NetworkDescriptionPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.NetworkDescriptionPlugin" collapsed="false" definedName="Network description plugin" height="317" keepsResults="true" width="414" xLocation="540" yLocation="410">
+<block ID="328954946" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.TopologicalNetworkDescriptionPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.TopologicalNetworkDescriptionPlugin" collapsed="false" definedName="Network description plugin" height="317" keepsResults="true" width="414" xLocation="540" yLocation="410">
 <variables>
 <input>
 <variable ID="Sequence with seeds(ROIs)" name="Sequence with seeds(ROIs)" runtime="false" visible="true"/>
