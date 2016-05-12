@@ -1,7 +1,9 @@
 package plugins.danyfel80.topologicalnetworkdescription.specific;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Point3i;
@@ -41,9 +43,9 @@ public class TopologicalNetworkDescriptionPlugin extends EzPlug implements Block
 	private EzVarSequence outputLabelsSequence = new EzVarSequence("Network Labels");
 	private EzVarSequence outputSkeletonSequence = new EzVarSequence("Network Skeleton");
 	private EzVarSequence outputLabeledSkeletonSequence = new EzVarSequence("Network Labeled Skeleton");
-	private Var<DirectedGraph<Point3i, DefaultEdge>> outputGraphDescription =
-	    new Var<DirectedGraph<Point3i, DefaultEdge>>("Network Graph Description",
-	        new DefaultDirectedGraph<Point3i, DefaultEdge>(DefaultEdge.class));
+	private Var<DirectedGraph<Point3i, DefaultEdge>> outputGraphDescription = new Var<DirectedGraph<Point3i, DefaultEdge>>(
+	    "Network Graph Description", new DefaultDirectedGraph<Point3i, DefaultEdge>(DefaultEdge.class));
+	private Var<List<Point3i>> outputSeedPoints = new Var<>("Seeds", new ArrayList<>()); 
 
 	@Override
 	protected void initialize() {
@@ -104,12 +106,12 @@ public class TopologicalNetworkDescriptionPlugin extends EzPlug implements Block
 			inputOriginalSequence.getValue().addOverlay(fol);
 		} else {
 			double maxDepth = (double) Collections.max(depthMap.values());
-			for (DefaultEdge e : ndc.getGraph().edgeSet()) {
+			for (DefaultEdge e: ndc.getGraph().edgeSet()) {
 				Point3i s = ndc.getGraph().getEdgeSource(e);
 				Point3i t = ndc.getGraph().getEdgeTarget(e);
 				ROI2DLine l = new ROI2DLine(s.x, s.y, t.x, t.y);
 				int dpth = depthMap.get(t);
-				l.setName(""+dpth);
+				l.setName("" + dpth);
 				dpth = (int) Math.round(255.0 * ((double) dpth / maxDepth));
 				l.setColor(new Color(dpth, dpth, dpth));
 				l.setShowName(true);
@@ -122,7 +124,8 @@ public class TopologicalNetworkDescriptionPlugin extends EzPlug implements Block
 		outputEndPointsSequence.setValue(endPointSequence);
 		outputLabelsSequence.setValue(labelsSequence);
 		outputLabeledSkeletonSequence.setValue(labeledSkeletonSequence);
-		outputGraphDescription = new Var<DirectedGraph<Point3i, DefaultEdge>>("Network Graph Description", ndc.getGraph());
+		outputGraphDescription.setValue(ndc.getGraph());
+		outputSeedPoints.setValue(ndc.getSeedPoints());
 
 		// MessageDialog.showDialog("Network Description Construction", "Network
 		// Description Execution time : " + cpu.getCPUElapsedTimeSec() + "s.",
@@ -136,8 +139,7 @@ public class TopologicalNetworkDescriptionPlugin extends EzPlug implements Block
 	}
 
 	@Override
-	public void declareInput(
-	    VarList inputMap) {
+	public void declareInput(VarList inputMap) {
 		inputMinRadius.setValue(4);
 		inputRadiusScale.setValue(2.5);
 		inputMap.add(inputOriginalSequence.name, inputOriginalSequence.getVariable());
@@ -150,13 +152,13 @@ public class TopologicalNetworkDescriptionPlugin extends EzPlug implements Block
 	}
 
 	@Override
-	public void declareOutput(
-	    VarList outputMap) {
+	public void declareOutput(VarList outputMap) {
 		outputMap.add(outputSkeletonSequence.name, outputSkeletonSequence.getVariable());
 		outputMap.add(outputBranchesSequence.name, outputBranchesSequence.getVariable());
 		outputMap.add(outputEndPointsSequence.name, outputEndPointsSequence.getVariable());
 		outputMap.add(outputLabelsSequence.name, outputLabelsSequence.getVariable());
 		outputMap.add(outputLabeledSkeletonSequence.name, outputLabeledSkeletonSequence.getVariable());
 		outputMap.add(outputGraphDescription.getName(), outputGraphDescription);
+		outputMap.add(outputSeedPoints.getName(), outputSeedPoints);
 	}
 }

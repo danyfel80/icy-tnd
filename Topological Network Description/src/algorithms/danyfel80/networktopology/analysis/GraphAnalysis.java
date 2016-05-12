@@ -21,8 +21,8 @@ import icy.sequence.Sequence;
  */
 public class GraphAnalysis {
 
-	public static Map<Point3i, Integer> getVertexDepthMap(
-	    DirectedGraph<Point3i, DefaultEdge> graph, List<Point3i> seedPoints) {
+	public static Map<Point3i, Integer> getVertexDepthMap(DirectedGraph<Point3i, DefaultEdge> graph,
+	    List<Point3i> seedPoints) {
 		Map<Point3i, Integer> depths = new HashMap<>();
 		for (Point3i seed : seedPoints) {
 			Map<Point3i, Integer> tmpDpths = getVertexDepthMap(graph, seed);
@@ -30,7 +30,7 @@ public class GraphAnalysis {
 		}
 		return depths;
 	}
-	
+
 	/**
 	 * Computes the depth of all the nodes in the graph with respect to the given
 	 * root.
@@ -42,18 +42,17 @@ public class GraphAnalysis {
 	 * @return Map with all the children nodes of the given root associating their
 	 *         depth.
 	 */
-	public static Map<Point3i, Integer> getVertexDepthMap(
-	    DirectedGraph<Point3i, DefaultEdge> g, Point3i root) {
+	public static Map<Point3i, Integer> getVertexDepthMap(DirectedGraph<Point3i, DefaultEdge> g, Point3i root) {
 		if (!g.containsVertex(root))
 			throw new IllegalArgumentException("The root point " + root + " is not present in the graph.");
 
 		Map<Point3i, Integer> depths = new HashMap<>(g.vertexSet().size());
 		int depth;
-		
-		depths.put(root, g.outgoingEdgesOf(root).size()-1);
-		
+
+		depths.put(root, g.outgoingEdgesOf(root).size() - 1);
+
 		BreadthFirstIterator<Point3i, DefaultEdge> it = new BreadthFirstIterator<>(g, root);
-		
+
 		// BFS
 		while (it.hasNext()) {
 			Point3i n = (Point3i) it.next();
@@ -61,7 +60,7 @@ public class GraphAnalysis {
 			System.out.println(n);
 			Set<DefaultEdge> children = g.outgoingEdgesOf(n);
 			for (DefaultEdge chE : children) {
-				depths.put(g.getEdgeTarget(chE), depth+1);
+				depths.put(g.getEdgeTarget(chE), depth + 1);
 			}
 		}
 		return depths;
@@ -77,15 +76,14 @@ public class GraphAnalysis {
 	 *          Point in the sequence.
 	 * @return Length of the path from the node to the minimum spanning tree root.
 	 */
-	public static double getNodeDistanceToRoot(
-	    Sequence mst, Point3i node) {
+	public static double getNodeDistanceToRoot(Sequence mst, Point3i node) {
 		int[][][] mstData = mst.getDataXYCZAsInt(0);
 		int sx = mst.getSizeX();
 		double distance = 0;
 
-		Point3i n = node;
-		Point3i p =
-		    new Point3i(mstData[n.z][0][n.x + n.y * sx], mstData[n.z][1][n.x + n.y * sx], mstData[n.z][2][n.x + n.y * sx]);
+		Point3i n = new Point3i(node);
+		Point3i p = new Point3i(mstData[n.z][0][n.x + n.y * sx], mstData[n.z][1][n.x + n.y * sx],
+		    mstData[n.z][2][n.x + n.y * sx]);
 
 		while (!n.equals(p)) {
 			Point3i diff = new Point3i();
@@ -94,6 +92,28 @@ public class GraphAnalysis {
 			distance += Math.sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
 			n.set(p);
 			p.set(mstData[n.z][0][n.x + n.y * sx], mstData[n.z][1][n.x + n.y * sx], mstData[n.z][2][n.x + n.y * sx]);
+		}
+		return distance;
+	}
+
+	public static double getNodeDistanceToParent(Sequence mst, Point3i childNode, Point3i parentNode) {
+		int[][][] mstData = mst.getDataXYCZAsInt(0);
+		int sx = mst.getSizeX();
+		double distance = 0;
+
+		Point3i cn = new Point3i(childNode);
+		Point3i pn = new Point3i(parentNode);
+		Point3i cp = new Point3i(mstData[cn.z][0][cn.x + cn.y * sx], mstData[cn.z][1][cn.x + cn.y * sx],
+		    mstData[cn.z][2][cn.x + cn.y * sx]);
+
+		while (!cn.equals(pn)) {
+			Point3i diff = new Point3i();
+			diff.sub(cn, cp);
+			diff.absolute();
+			distance += Math.sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+			cn.set(cp);
+			cp.set(mstData[cn.z][0][cn.x + cn.y * sx], mstData[cn.z][1][cn.x + cn.y * sx],
+			    mstData[cn.z][2][cn.x + cn.y * sx]);
 		}
 		return distance;
 	}
@@ -108,8 +128,7 @@ public class GraphAnalysis {
 	 *          Edge to compute its angles.
 	 * @return Pair of values (Yaw and Pitch) in radians.
 	 */
-	public static Point2d getBranchOrientation(
-	    DirectedGraph<Point3i, DefaultEdge> g, DefaultEdge e) {
+	public static Point2d getBranchOrientation(DirectedGraph<Point3i, DefaultEdge> g, DefaultEdge e) {
 		Point3i p1, p2, p3 = new Point3i();
 		p1 = g.getEdgeSource(e);
 		p2 = g.getEdgeTarget(e);
@@ -117,12 +136,11 @@ public class GraphAnalysis {
 
 		Point2d res = new Point2d();
 		// Yaw
-		res.x = Math.atan2(p3.z, p3.x) - Math.PI;
+		res.x = Math.atan2(p3.y, p3.x);
 		// Pitch
-		res.y = -Math.atan2(p3.y, Math.sqrt(p3.x * p3.x + p3.z * p3.z));
+		res.y = -Math.atan2(p3.z, Math.sqrt(p3.x * p3.x + p3.y * p3.y));
 
 		return res;
 	}
 
-	
 }
