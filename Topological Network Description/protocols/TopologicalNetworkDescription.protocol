@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <protocol VERSION="4">
 <blocks>
-<block ID="2008441520" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.FloodFillFilteringPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.FloodFillFilteringPlugin" collapsed="false" definedName="Flood fill filter" height="129" keepsResults="true" width="296" xLocation="69" yLocation="32">
+<block ID="2008441520" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.FloodFillFilteringPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.FloodFillFilteringPlugin" collapsed="false" definedName="Flood fill filter" height="129" keepsResults="true" width="296" xLocation="70" yLocation="32">
 <variables>
 <input>
 <variable ID="Sequence with seeds(ROIs)" name="Sequence with seeds(ROIs)" runtime="false" value="Active Sequence" visible="true"/>
@@ -26,12 +26,12 @@
 </output>
 </variables>
 </block>
-<block ID="2047426829" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedMapGenerationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedMapGenerationPlugin" collapsed="true" definedName="Cost to seed map generation" height="156" keepsResults="true" width="417" xLocation="153" yLocation="384">
+<block ID="2047426829" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedMapGenerationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedMapGenerationPlugin" collapsed="true" definedName="Cost to seed map generation" height="156" keepsResults="true" width="417" xLocation="119" yLocation="264">
 <variables>
 <input>
 <variable ID="Sequence with seeds(ROIs)" name="Sequence with seeds(ROIs)" runtime="false" visible="true"/>
 <variable ID="Inverted Distance Map" name="Inverted Distance Map" runtime="false" visible="true"/>
-<variable ID="Base level change multiplier" name="Base level change multiplier" runtime="false" value="2.0" visible="true"/>
+<variable ID="Base level change multiplier" name="Base level change multiplier" runtime="false" value="0.0" visible="true"/>
 <variable ID="Base direction change multiplier" name="Base direction change multiplier" runtime="false" value="1.0" visible="true"/>
 <variable ID="Show Result Sequences" name="Show Result Sequences" runtime="false" visible="true"/>
 </input>
@@ -71,6 +71,7 @@
 <variable ID="Network Labels" name="Network Labels" runtime="false" visible="true"/>
 <variable ID="Network Labeled Skeleton" name="Network Labeled Skeleton" runtime="false" visible="true"/>
 <variable ID="Network Graph Description" name="Network Graph Description" runtime="false" visible="true"/>
+<variable ID="Seeds" name="Seeds" runtime="false" visible="true"/>
 </output>
 </variables>
 </block>
