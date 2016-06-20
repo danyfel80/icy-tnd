@@ -40,6 +40,7 @@ public class NetworkDescriptionReporter {
 		int rowId = 1;
 		int treeId = 1;
 		int branchId = 1;
+		Map<Point3i, Integer> parentIds = new HashMap<Point3i, Integer>();
 		for (Point3i v : seeds) {
 
 			Map<Point3i, Double> distanceToRoot = new HashMap<>();
@@ -60,8 +61,22 @@ public class NetworkDescriptionReporter {
 					double v2DistTov1 = GraphAnalysis.getNodeDistanceToParent(msfSeq, v2, v1);
 					distanceToRoot.put(v2, v2DistTov1 + v1DistToRoot);
 					Point2d orientation = GraphAnalysis.getBranchOrientation(graph, v1ChildEdge);
-
-					processBranch(sheet, rowId, treeId, branchId, v1, v2, depth.get(v2), orientation.x, orientation.y,
+					if (orientation.x < 0d) {
+						orientation.x += 2.0 * Math.PI;
+					}
+					if (orientation.y < 0d) {
+						orientation.y += 2.0 * Math.PI;
+					}
+					if (orientation.x == -0.0) {
+						orientation.x = 0;
+					}
+					if (orientation.y == -0.0) {
+						orientation.y = 0;
+					}
+					orientation.x *= 180d / Math.PI;
+					orientation.y *= 180d / Math.PI;
+					parentIds.put(v2, branchId);
+					processBranch(sheet, rowId, treeId, parentIds.getOrDefault(v1, -1), branchId, v1, v2, depth.get(v2), orientation.x, orientation.y,
 					    v2DistTov1Euc, v2DistTov1, v2DistTov1 + v1DistToRoot, v1.equals(v));
 					rowId++;
 					branchId++;
@@ -83,24 +98,26 @@ public class NetworkDescriptionReporter {
 		Cell cell = row.createCell(0, Cell.CELL_TYPE_STRING);
 		cell.setCellValue("Tree ID");
 		cell = row.createCell(1, Cell.CELL_TYPE_STRING);
-		cell.setCellValue("Branch ID");
+		cell.setCellValue("Parent branch ID");
 		cell = row.createCell(2, Cell.CELL_TYPE_STRING);
-		cell.setCellValue("Start Point");
+		cell.setCellValue("Branch ID");
 		cell = row.createCell(3, Cell.CELL_TYPE_STRING);
-		cell.setCellValue("End Point");
+		cell.setCellValue("Start Point");
 		cell = row.createCell(4, Cell.CELL_TYPE_STRING);
-		cell.setCellValue("Depth");
+		cell.setCellValue("End Point");
 		cell = row.createCell(5, Cell.CELL_TYPE_STRING);
-		cell.setCellValue("Orientation Yaw");
+		cell.setCellValue("Depth");
 		cell = row.createCell(6, Cell.CELL_TYPE_STRING);
-		cell.setCellValue("Orientation Pitch");
+		cell.setCellValue("Orientation Yaw");
 		cell = row.createCell(7, Cell.CELL_TYPE_STRING);
-		cell.setCellValue("Length");
+		cell.setCellValue("Orientation Pitch");
 		cell = row.createCell(8, Cell.CELL_TYPE_STRING);
-		cell.setCellValue("Real Length");
+		cell.setCellValue("Length");
 		cell = row.createCell(9, Cell.CELL_TYPE_STRING);
-		cell.setCellValue("Distance from root");
+		cell.setCellValue("Real Length");
 		cell = row.createCell(10, Cell.CELL_TYPE_STRING);
+		cell.setCellValue("Distance from root");
+		cell = row.createCell(11, Cell.CELL_TYPE_STRING);
 		cell.setCellValue("Is root branch");
 	}
 
@@ -119,7 +136,7 @@ public class NetworkDescriptionReporter {
 	 *          edgeDepth
 	 * @param distanceToParent
 	 */
-	private static void processBranch(Sheet sheet, int rowId, int treeId, int branchId, Point3i v1, Point3i v2,
+	private static void processBranch(Sheet sheet, int rowId, int treeId, int parentBranchId, int endBranchId, Point3i v1, Point3i v2,
 	    Integer depth, double yaw, double pitch, double length, double realLength, double distanceToRoot,
 	    boolean isRootBranch) {
 		Row row = sheet.createRow(rowId);
@@ -127,35 +144,38 @@ public class NetworkDescriptionReporter {
 		// Tree ID
 		cell = row.createCell(0, Cell.CELL_TYPE_NUMERIC);
 		cell.setCellValue(treeId);
-		// Branch ID
+		// Parent branch ID
 		cell = row.createCell(1, Cell.CELL_TYPE_NUMERIC);
-		cell.setCellValue(branchId);
+		cell.setCellValue(parentBranchId);
+		// Branch ID
+		cell = row.createCell(2, Cell.CELL_TYPE_NUMERIC);
+		cell.setCellValue(endBranchId);
 		// Start point
-		cell = row.createCell(2, Cell.CELL_TYPE_STRING);
+		cell = row.createCell(3, Cell.CELL_TYPE_STRING);
 		cell.setCellValue(v1.toString());
 		// End point
-		cell = row.createCell(3, Cell.CELL_TYPE_STRING);
+		cell = row.createCell(4, Cell.CELL_TYPE_STRING);
 		cell.setCellValue(v2.toString());
 		// Depth
-		cell = row.createCell(4, Cell.CELL_TYPE_NUMERIC);
+		cell = row.createCell(5, Cell.CELL_TYPE_NUMERIC);
 		cell.setCellValue(depth);
 		// Orientation Pitch
-		cell = row.createCell(5, Cell.CELL_TYPE_NUMERIC);
+		cell = row.createCell(6, Cell.CELL_TYPE_NUMERIC);
 		cell.setCellValue(yaw);
 		// Orientation Yaw
-		cell = row.createCell(6, Cell.CELL_TYPE_NUMERIC);
+		cell = row.createCell(7, Cell.CELL_TYPE_NUMERIC);
 		cell.setCellValue(pitch);
 		// Branch Lenght
-		cell = row.createCell(7, Cell.CELL_TYPE_NUMERIC);
+		cell = row.createCell(8, Cell.CELL_TYPE_NUMERIC);
 		cell.setCellValue(length);
 		// Branch Real Length
-		cell = row.createCell(8, Cell.CELL_TYPE_NUMERIC);
+		cell = row.createCell(9, Cell.CELL_TYPE_NUMERIC);
 		cell.setCellValue(realLength);
 		// Distance to root
-		cell = row.createCell(9, Cell.CELL_TYPE_NUMERIC);
+		cell = row.createCell(10, Cell.CELL_TYPE_NUMERIC);
 		cell.setCellValue(distanceToRoot);
 		// Is root branch
-		cell = row.createCell(10, Cell.CELL_TYPE_BOOLEAN);
+		cell = row.createCell(11, Cell.CELL_TYPE_BOOLEAN);
 		cell.setCellValue(isRootBranch);
 	}
 

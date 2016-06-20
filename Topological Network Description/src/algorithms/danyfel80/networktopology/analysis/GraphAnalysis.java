@@ -49,7 +49,8 @@ public class GraphAnalysis {
 		Map<Point3i, Integer> depths = new HashMap<>(g.vertexSet().size());
 		int depth;
 
-		depths.put(root, g.outgoingEdgesOf(root).size() - 1);
+		//depths.put(root, g.outgoingEdgesOf(root).size() - 1);
+		depths.put(root, 0);
 
 		BreadthFirstIterator<Point3i, DefaultEdge> it = new BreadthFirstIterator<>(g, root);
 

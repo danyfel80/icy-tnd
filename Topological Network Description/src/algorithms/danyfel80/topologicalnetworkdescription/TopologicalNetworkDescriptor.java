@@ -4,6 +4,7 @@
 package algorithms.danyfel80.topologicalnetworkdescription;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -14,6 +15,9 @@ import javax.vecmath.Point3i;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.DepthFirstIterator;
+
+import com.sun.javafx.geom.Vec3d;
 
 import icy.image.IcyBufferedImage;
 import icy.sequence.Sequence;
@@ -347,6 +351,7 @@ public class TopologicalNetworkDescriptor {
 		byte[][][] endPointData = endPointSequence.getDataXYCZAsByte(0);
 		byte[][][] branchData = branchSequence.getDataXYCZAsByte(0);
 		int[][][] mstData = minimumSpanningTree.getDataXYCZAsInt(0);
+		int[][][] distanceData = distanceMap.getDataXYCZAsInt(0);
 		int sizeX = endPointSequence.getSizeX();
 		int sizeY = endPointSequence.getSizeY();
 		int sizeZ = endPointSequence.getSizeZ();
@@ -390,6 +395,34 @@ public class TopologicalNetworkDescriptor {
 				}
 			}
 		}
+		
+		// Filter fake small edges.
+		List<DefaultEdge> edgesToDelete = new ArrayList<DefaultEdge>();
+		for (Point3i seed : seeds) {
+			DepthFirstIterator<Point3i, DefaultEdge> it = new DepthFirstIterator<Point3i, DefaultEdge>(graph, seed);
+			while(it.hasNext()) {
+				Point3i parent = it.next();
+				Set<DefaultEdge> children = graph.outgoingEdgesOf(parent);
+				for (DefaultEdge childE : children) {
+					Point3i child = graph.getEdgeTarget(childE);
+					Vec3d v = new Vec3d(child.x - parent.x, child.y - parent.y, child.z - parent.z);
+					if (v.length() * v.length() < distanceData[parent.z][0][parent.x + parent.y*sizeX]) {
+						edgesToDelete.add(childE);
+					}
+				}
+			}
+		}
+		Collections.reverse(edgesToDelete);
+		for (DefaultEdge edge : edgesToDelete) {
+			Point3i parent = graph.getEdgeSource(edge);
+			Point3i child = graph.getEdgeTarget(edge);
+			Set<DefaultEdge> children = graph.outgoingEdgesOf(child);
+			for (DefaultEdge childEdge : children) {
+				graph.addEdge(parent, graph.getEdgeTarget(childEdge));
+			}
+			graph.removeVertex(child);
+		}
+		
 
 		return this.graph;
 	}
