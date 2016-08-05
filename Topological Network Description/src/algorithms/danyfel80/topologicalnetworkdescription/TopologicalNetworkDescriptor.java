@@ -11,13 +11,12 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import javax.vecmath.Point3i;
+import javax.vecmath.Vector3d;
 
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.DepthFirstIterator;
-
-import com.sun.javafx.geom.Vec3d;
 
 import icy.image.IcyBufferedImage;
 import icy.sequence.Sequence;
@@ -405,7 +404,7 @@ public class TopologicalNetworkDescriptor {
 				Set<DefaultEdge> children = graph.outgoingEdgesOf(parent);
 				for (DefaultEdge childE : children) {
 					Point3i child = graph.getEdgeTarget(childE);
-					Vec3d v = new Vec3d(child.x - parent.x, child.y - parent.y, child.z - parent.z);
+					Vector3d v = new Vector3d(child.x - parent.x, child.y - parent.y, child.z - parent.z);
 					if (v.length() * v.length() < distanceData[parent.z][0][parent.x + parent.y*sizeX]) {
 						edgesToDelete.add(childE);
 					}
