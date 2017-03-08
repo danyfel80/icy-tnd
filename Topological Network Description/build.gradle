@@ -1,6 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
+task fatJar(type: Jar) {
+	baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 repositories {
   mavenCentral()
 }
@@ -8,42 +14,31 @@ repositories {
 dependencies {
   compile 'org.jgrapht:jgrapht-core:0.9.1'
   compile 'org.apache.poi:poi:3.14'
+  
+
+// 1.2. Icy libraries
+    compile files("${System.env.ICY_HOME}/icy.jar") // Icy core
+    compile files("${System.env.ICY_HOME}/plugins/adufour/ezplug/EzPlug.jar") // EzPlug
+    compile files("${System.env.ICY_HOME}/plugins/adufour/blocks/Blocks.jar") // Blocks
+    compile files("${System.env.ICY_HOME}/plugins/adufour/protocols/Protocols.jar") // Protocols
+    compile files("${System.env.ICY_HOME}/plugins/adufour/workbooks/Workbooks.jar") // Workbooks
+    compile files("${System.env.ICY_HOME}/plugins/adufour/connectedComponents/ConnectedComponents.jar") // ConnectedComponents
+    compile files("${System.env.ICY_HOME}/plugins/nherve/toolbox/NherveToolbox.jar") // Toolbox
+    compile files("${System.env.ICY_HOME}/plugins/vannary/morphomaths/MorphoMaths.jar") // MorphoMaths
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }       
+    }
+}
+
+// In this section source and test files are declared
 eclipse {
   project {
     natures += ['icy.icy4eclipse.core.icynature']
   }
-  classpath {
-    file {
-      withXml {
-          def node = it.asNode()
-          
-          // clean src
-          node.classpathentry.findAll{
-            it.@kind == 'src'
-          }.each{
-            node.remove(it)
-          }
-          
-          // clean var
-          node.classpathentry.findAll{
-            it.@kind == 'var'
-          }.each{
-            node.remove(it)
-          }
-          
-          // set src and var
-          node.appendNode('classpathentry', [kind: 'src', path: 'src'])
-          node.appendNode('classpathentry', [kind: 'var', path: 'ICY_HOME/icy.jar'])
-          node.appendNode('classpathentry', [kind: 'var', path: 'ICY_HOME/plugins/adufour/blocks/Blocks.jar'])
-          node.appendNode('classpathentry', [kind: 'var', path: 'ICY_HOME/plugins/adufour/workbooks/Workbooks.jar'])
-          node.appendNode('classpathentry', [kind: 'var', path: 'ICY_HOME/plugins/adufour/connectedcomponents/ConnectedComponents.jar'])
-          node.appendNode('classpathentry', [kind: 'var', path: 'ICY_HOME/plugins/adufour/ezplug/EzPlug.jar'])
-          node.appendNode('classpathentry', [kind: 'var', path: 'ICY_HOME/plugins/nherve/toolbox/NherveToolbox.jar'])
-          node.appendNode('classpathentry', [kind: 'var', path: 'ICY_HOME/plugins/vannary/morphomaths/MorphoMaths.jar'])
-          
-      }
-    }
-  }
 }
+
