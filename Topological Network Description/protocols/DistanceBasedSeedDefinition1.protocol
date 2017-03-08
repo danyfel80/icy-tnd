@@ -1,0 +1,207 @@
+<protocol VERSION="4">
+<blocks>
+<block ID="1507465159" blockType="plugins.danyfel80.segmentation.hysteresis.HysteresisThresholding" className="plugins.danyfel80.segmentation.hysteresis.HysteresisThresholding" collapsed="false" definedName="Hysteresis thresholding" height="157" keepsResults="true" width="276" xLocation="8" yLocation="10">
+<variables>
+<input>
+<variable ID="Sequence" name="Sequence" runtime="false" value="Active Sequence" visible="true"/>
+<variable ID="Low threshold" name="Low threshold" runtime="false" value="90.0" visible="true"/>
+<variable ID="High threshold" name="High threshold" runtime="false" value="200.0" visible="true"/>
+<variable ID="3D processing" name="3D processing" runtime="false" value="true" visible="true"/>
+</input>
+<output>
+<variable ID="Thresholded Sequence" name="Thresholded Sequence" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="266769857" blockType="plugins.adufour.roi.LabelExtractor" className="plugins.adufour.roi.LabelExtractor" collapsed="true" definedName="Label Extractor" height="130" keepsResults="true" width="295" xLocation="315" yLocation="12">
+<variables>
+<input>
+<variable ID="input sequence" name="Labeled sequence" runtime="false" visible="true"/>
+<variable ID="extract mode" name="Extract" runtime="false" value="ANY_LABEL_VS_BACKGROUND" visible="true"/>
+<variable ID="value" name="Value" runtime="false" value="0.0" visible="true"/>
+</input>
+<output>
+<variable ID="ROI" name="Extracted ROI" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="884357185" blockType="plugins.adufour.morphology.FillHolesInROI" className="plugins.adufour.morphology.FillHolesInROI" collapsed="true" definedName="Fill holes in ROI" height="83" keepsResults="true" width="201" xLocation="518" yLocation="13">
+<variables>
+<input>
+<variable ID="List of ROI" name="List of ROI" runtime="false" visible="true"/>
+</input>
+<output>
+<variable ID="List of hole-filled ROI" name="List of hole-filled ROI" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="2018669969" blockType="plugins.tprovoost.sequenceblocks.op.FillInnerSequence" className="plugins.tprovoost.sequenceblocks.SequenceBlocks" collapsed="true" definedName="Fill inner sequence" height="108" keepsResults="true" width="244" xLocation="319" yLocation="68">
+<variables>
+<input>
+<variable ID="sequence" name="Sequence" runtime="false" visible="true"/>
+<variable ID="rois" name="Roi(s)" runtime="false" visible="true"/>
+<variable ID="value" name="Value" runtime="false" value="255.0" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+<block ID="1838596156" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.DistanceMapGenerationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.DistanceMapGenerationPlugin" collapsed="true" definedName="Distance map generation plugin" height="151" keepsResults="true" width="323" xLocation="317" yLocation="142">
+<variables>
+<input>
+<variable ID="Segmented Sequence" name="Segmented Sequence" runtime="false" visible="true"/>
+<variable ID="Show Result Sequences" name="Show Result Sequences" runtime="false" value="false" visible="true"/>
+</input>
+<output>
+<variable ID="Distance Map" name="Distance Map" runtime="false" visible="true"/>
+<variable ID="Squared Distance Map" name="Squared Distance Map" runtime="false" visible="true"/>
+<variable ID="Inverted Squared Distance Map" name="Inverted Squared Distance Map" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="967563835" blockType="plugins.adufour.blocks.tools.sequence.ShowSequence" className="plugins.adufour.blocks.tools.sequence.ShowSequence" collapsed="true" definedName="Show sequence" height="61" keepsResults="true" width="243" xLocation="545" yLocation="70">
+<variables>
+<input>
+<variable ID="sequence" name="sequence" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+<workflow ID="161550976" blockType="plugins.adufour.blocks.lang.WorkFlow" className="plugins.adufour.blocks.lang.WorkFlow" collapsed="false" definedName="Seed extraction" height="994" keepsResults="true" width="701" xLocation="22" yLocation="192">
+<blocks>
+<block ID="1895674979" blockType="plugins.adufour.thresholder.Thresholder" className="plugins.adufour.thresholder.Thresholder" collapsed="false" definedName="Thresholder" height="192" keepsResults="true" width="243" xLocation="18" yLocation="62">
+<variables>
+<input>
+<variable ID="Input" name="Input" runtime="false" visible="true"/>
+<variable ID="channel" name="channel" runtime="false" value="0" visible="true"/>
+<variable ID="Manual thresholds" name="Manual thresholds" runtime="false" value="8.0" visible="true"/>
+<variable ID="Treat as percentiles" name="Treat as percentiles" runtime="false" value="false" visible="true"/>
+</input>
+<output>
+<variable ID="output" name="Binary output" runtime="false" visible="true"/>
+<variable ID="ROI" name="ROI" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="184281485" blockType="plugins.adufour.roi.LabelExtractor" className="plugins.adufour.roi.LabelExtractor" collapsed="false" definedName="Label Extractor" height="136" keepsResults="true" width="387" xLocation="55" yLocation="274">
+<variables>
+<input>
+<variable ID="input sequence" name="Labeled sequence" runtime="false" visible="true"/>
+<variable ID="extract mode" name="Extract" runtime="false" value="ANY_LABEL_VS_BACKGROUND" visible="true"/>
+<variable ID="value" name="Value" runtime="false" value="0.0" visible="true"/>
+</input>
+<output>
+<variable ID="ROI" name="Extracted ROI" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block CommandLineID="" ID="208403219" blockType="plugins.adufour.blocks.tools.input.Sequence" className="plugins.adufour.blocks.tools.input.Sequence" collapsed="false" definedName="Sequence" height="61" keepsResults="true" width="188" xLocation="75" yLocation="0">
+<variables>
+<input>
+<variable ID="input sequence" name="sequence" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+<workflow ID="1055307509" blockType="plugins.adufour.blocks.lang.Batch" className="plugins.adufour.blocks.lang.Batch" collapsed="false" definedName="Get Mass Centers" height="469" keepsResults="true" width="536" xLocation="19" yLocation="422">
+<blocks>
+<block ID="896631934" blockType="plugins.tprovoost.scripteditor.scriptblock.Javascript" className="plugins.tprovoost.scripteditor.scriptblock.Javascript" collapsed="false" definedName="Javascript" height="391" keepsResults="true" width="318" xLocation="168" yLocation="6">
+<variables>
+<input>
+<variable ID="Script" name="" runtime="false" value="// Click on the button&#10;// to edit in a frame.&#10;&#10;importClass(Packages.icy.roi.ROI2DPoint)&#10;importClass(Packages.icy.roi.ROI2D)&#10;importClass(Packages.plugins.kernel.roi.descriptor.measure.ROIMassCenterDescriptorsPlugin)&#10;&#10;point = ROIMassCenterDescriptorsPlugin.computeMassCenter(input0)&#10;roiPoint = new ROI2DPoint(point.getX(), point.getY())&#10;roiPoint.setZ(point.getZ())&#10;input1.addROI(roiPoint)&#10;&#10;output0 = input1" visible="true"/>
+<variable ID="Add Input" name="Add Input" runtime="false" value="1" visible="true"/>
+<variable ID="Add output" name="Add output" runtime="false" value="0" visible="true"/>
+<variable ID="input0" name="input0" runtime="false" type="icy.roi.ROI" visible="true"/>
+<variable ID="1060788839" name="input1" runtime="true" type="icy.sequence.Sequence" visible="true"/>
+</input>
+<output>
+<variable ID="output0" name="output0" runtime="false" type="icy.sequence.Sequence" visible="true"/>
+</output>
+</variables>
+</block>
+</blocks>
+<links>
+<link dstBlockID="896631934" dstVarID="input0" srcBlockID="1055307509" srcVarID="element" srcVarType="icy.roi.ROI"/>
+</links>
+<variables>
+<input>
+<variable ID="array" blockID="1055307509" value="" visible="true"/>
+<variable ID="896631934:Script" blockID="896631934" value="// Click on the button&#10;// to edit in a frame.&#10;&#10;importClass(Packages.icy.roi.ROI2DPoint)&#10;importClass(Packages.icy.roi.ROI2D)&#10;importClass(Packages.plugins.kernel.roi.descriptor.measure.ROIMassCenterDescriptorsPlugin)&#10;&#10;point = ROIMassCenterDescriptorsPlugin.computeMassCenter(input0)&#10;roiPoint = new ROI2DPoint(point.getX(), point.getY())&#10;roiPoint.setZ(point.getZ())&#10;input1.addROI(roiPoint)&#10;&#10;output0 = input1" visible="false"/>
+<variable ID="896631934:Add Input" blockID="896631934" value="1" visible="false"/>
+<variable ID="896631934:Add output" blockID="896631934" value="0" visible="false"/>
+<variable ID="896631934:input0" blockID="896631934" value="" visible="false"/>
+<variable ID="896631934:1060788839" blockID="896631934" value="" visible="true"/>
+</input>
+<output>
+<variable ID="iteration" blockID="1055307509" visible="true"/>
+<variable ID="element" blockID="1055307509" visible="true"/>
+<variable ID="896631934:output0" blockID="896631934" visible="true"/>
+</output>
+</variables>
+</workflow>
+<block CommandLineID="" ID="1558656878" blockType="plugins.adufour.blocks.tools.input.Sequence" className="plugins.adufour.blocks.tools.input.Sequence" collapsed="false" definedName="Sequence" height="61" keepsResults="true" width="188" xLocation="385" yLocation="159">
+<variables>
+<input>
+<variable ID="input sequence" name="sequence" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+<block ID="1529551323" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.FilterROI2DPointsWithDistanceMap" className="plugins.danyfel80.topologicalnetworkdescription.specific.FilterROI2DPointsWithDistanceMap" collapsed="false" definedName="Filter RO i2 D points with distance map" height="83" keepsResults="true" width="323" xLocation="330" yLocation="65">
+<variables>
+<input>
+<variable ID="Annotated sequence" name="Annotated sequence" runtime="false" visible="true"/>
+<variable ID="Distance map" name="Distance map" runtime="false" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+</blocks>
+<links>
+<link dstBlockID="184281485" dstVarID="input sequence" srcBlockID="1895674979" srcVarID="output"/>
+<link dstBlockID="1529551323" dstVarID="Distance map" srcBlockID="1895674979" srcVarID="Input"/>
+<link dstBlockID="1055307509" dstVarID="array" srcBlockID="184281485" srcVarID="ROI"/>
+<link dstBlockID="1055307509" dstVarID="896631934:1060788839" srcBlockID="208403219" srcVarID="input sequence"/>
+<link dstBlockID="1558656878" dstVarID="input sequence" srcBlockID="1055307509" srcVarID="896631934:output0" srcVarType="icy.sequence.Sequence"/>
+<link dstBlockID="1529551323" dstVarID="Annotated sequence" srcBlockID="1558656878" srcVarID="input sequence"/>
+</links>
+<variables>
+<input>
+<variable ID="1895674979:Input" blockID="1895674979" visible="true"/>
+<variable ID="1895674979:channel" blockID="1895674979" value="0" visible="false"/>
+<variable ID="1895674979:Manual thresholds" blockID="1895674979" value="8.0" visible="false"/>
+<variable ID="1895674979:Treat as percentiles" blockID="1895674979" value="false" visible="false"/>
+<variable ID="184281485:input sequence" blockID="184281485" visible="false"/>
+<variable ID="184281485:extract mode" blockID="184281485" value="ANY_LABEL_VS_BACKGROUND" visible="false"/>
+<variable ID="184281485:value" blockID="184281485" value="0.0" visible="false"/>
+<variable ID="208403219:input sequence" blockID="208403219" value="Active Sequence" visible="true"/>
+<variable ID="1055307509:array" blockID="1055307509" value="" visible="false"/>
+<variable ID="1055307509:896631934:Script" blockID="1055307509" value="// Click on the button&#10;// to edit in a frame.&#10;&#10;importClass(Packages.icy.roi.ROI2DPoint)&#10;importClass(Packages.icy.roi.ROI2D)&#10;importClass(Packages.plugins.kernel.roi.descriptor.measure.ROIMassCenterDescriptorsPlugin)&#10;&#10;point = ROIMassCenterDescriptorsPlugin.computeMassCenter(input0)&#10;roiPoint = new ROI2DPoint(point.getX(), point.getY())&#10;roiPoint.setZ(point.getZ())&#10;input1.addROI(roiPoint)&#10;&#10;output0 = input1" visible="false"/>
+<variable ID="1055307509:896631934:Add Input" blockID="1055307509" value="1" visible="false"/>
+<variable ID="1055307509:896631934:Add output" blockID="1055307509" value="0" visible="false"/>
+<variable ID="1055307509:896631934:input0" blockID="1055307509" value="" visible="false"/>
+<variable ID="1055307509:896631934:1060788839" blockID="1055307509" value="" visible="false"/>
+<variable ID="1529551323:Annotated sequence" blockID="1529551323" visible="false"/>
+<variable ID="1529551323:Distance map" blockID="1529551323" visible="false"/>
+<variable ID="1558656878:input sequence" blockID="1558656878" visible="false"/>
+</input>
+<output>
+<variable ID="1895674979:output" blockID="1895674979" visible="false"/>
+<variable ID="1895674979:ROI" blockID="1895674979" visible="false"/>
+<variable ID="184281485:ROI" blockID="184281485" visible="false"/>
+<variable ID="1055307509:iteration" blockID="1055307509" visible="false"/>
+<variable ID="1055307509:element" blockID="1055307509" visible="false"/>
+</output>
+</variables>
+</workflow>
+</blocks>
+<links>
+<link dstBlockID="266769857" dstVarID="input sequence" srcBlockID="1507465159" srcVarID="Thresholded Sequence"/>
+<link dstBlockID="161550976" dstVarID="208403219:input sequence" srcBlockID="1507465159" srcVarID="Sequence"/>
+<link dstBlockID="884357185" dstVarID="List of ROI" srcBlockID="266769857" srcVarID="ROI"/>
+<link dstBlockID="2018669969" dstVarID="sequence" srcBlockID="266769857" srcVarID="input sequence"/>
+<link dstBlockID="2018669969" dstVarID="rois" srcBlockID="884357185" srcVarID="List of hole-filled ROI"/>
+<link dstBlockID="1838596156" dstVarID="Segmented Sequence" srcBlockID="2018669969" srcVarID="sequence"/>
+<link dstBlockID="161550976" dstVarID="1895674979:Input" srcBlockID="1838596156" srcVarID="Distance Map"/>
+<link dstBlockID="967563835" dstVarID="sequence" srcBlockID="1838596156" srcVarID="Distance Map"/>
+</links>
+</protocol>

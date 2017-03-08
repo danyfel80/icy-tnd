@@ -1,0 +1,130 @@
+<protocol VERSION="4">
+<blocks>
+<block ID="527278744" blockType="plugins.danyfel80.segmentation.hysteresis.HysteresisThresholding" className="plugins.danyfel80.segmentation.hysteresis.HysteresisThresholding" collapsed="false" definedName="Hysteresis thresholding" height="157" keepsResults="true" width="280" xLocation="24" yLocation="20">
+<variables>
+<input>
+<variable ID="Sequence" name="Sequence" runtime="false" visible="true"/>
+<variable ID="Low threshold" name="Low threshold" runtime="false" value="36.0" visible="true"/>
+<variable ID="High threshold" name="High threshold" runtime="false" value="120.0" visible="true"/>
+<variable ID="3D processing" name="3D processing" runtime="false" value="true" visible="true"/>
+</input>
+<output>
+<variable ID="Thresholded Sequence" name="Thresholded Sequence" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="2008441520" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.FloodFillFilteringPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.FloodFillFilteringPlugin" collapsed="false" definedName="Flood fill filter" height="129" keepsResults="true" width="296" xLocation="22" yLocation="209">
+<variables>
+<input>
+<variable ID="Sequence with seeds(ROIs)" name="Sequence with seeds(ROIs)" runtime="false" visible="true"/>
+<variable ID="Thresholded Sequence" name="Thresholded Sequence" runtime="false" visible="true"/>
+<variable ID="Show Result Sequence" name="Show Result Sequence" runtime="false" value="false" visible="true"/>
+</input>
+<output>
+<variable ID="Segmented Sequence" name="Segmented Sequence" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="1010881022" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.DistanceMapGenerationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.DistanceMapGenerationPlugin" collapsed="true" definedName="Distance map generation" height="156" keepsResults="true" width="417" xLocation="47" yLocation="353">
+<variables>
+<input>
+<variable ID="Segmented Sequence" name="Segmented Sequence" runtime="false" visible="true"/>
+<variable ID="Show Result Sequences" name="Show Result Sequences" runtime="false" value="false" visible="true"/>
+</input>
+<output>
+<variable ID="Distance Map" name="Distance Map" runtime="false" visible="true"/>
+<variable ID="Squared Distance Map" name="Squared Distance Map" runtime="false" visible="true"/>
+<variable ID="Inverted Squared Distance Map" name="Inverted Squared Distance Map" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="2047426829" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedMapGenerationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.CostToSeedMapGenerationPlugin" collapsed="true" definedName="Cost to seed map generation" height="192" keepsResults="true" width="417" xLocation="37" yLocation="404">
+<variables>
+<input>
+<variable ID="Sequence with seeds(ROIs)" name="Sequence with seeds(ROIs)" runtime="false" visible="true"/>
+<variable ID="Inverted Distance Map" name="Inverted Distance Map" runtime="false" visible="true"/>
+<variable ID="Base level change multiplier" name="Base level change multiplier" runtime="false" value="0.0" visible="true"/>
+<variable ID="Base direction change multiplier" name="Base direction change multiplier" runtime="false" value="0.0" visible="true"/>
+<variable ID="Show Result Sequences" name="Show Result Sequences" runtime="false" value="false" visible="true"/>
+</input>
+<output>
+<variable ID="Cost To Seed" name="Cost To Seed" runtime="false" visible="true"/>
+<variable ID="Minimum Spanning Tree" name="Minimum Spanning Tree" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="1348112690" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.EndnessMapGenerationPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.EndnessMapGenerationPlugin" collapsed="false" definedName="Endness map generation" height="134" keepsResults="true" width="417" xLocation="31" yLocation="452">
+<variables>
+<input>
+<variable ID="Cost To Seed" name="Cost To Seed" runtime="false" visible="true"/>
+<variable ID="Squared Distance Map" name="Squared Distance Map" runtime="false" visible="true"/>
+<variable ID="Show Result Sequences" name="Show Result Sequences" runtime="false" value="false" visible="true"/>
+</input>
+<output>
+<variable ID="Endness Map" name="Endness Map" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="1893728517" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.TopologicalNetworkDescriptionPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.TopologicalNetworkDescriptionPlugin" collapsed="false" definedName="Topological network description" height="353" keepsResults="true" width="420" xLocation="614" yLocation="144">
+<variables>
+<input>
+<variable ID="Sequence with seeds(ROIs)" name="Sequence with seeds(ROIs)" runtime="false" visible="true"/>
+<variable ID="Minimum Spanning Tree" name="Minimum Spanning Tree" runtime="false" visible="true"/>
+<variable ID="Endness Map" name="Endness Map" runtime="false" visible="true"/>
+<variable ID="Squared Distance Map" name="Squared Distance Map" runtime="false" visible="true"/>
+<variable ID="Minimum labeling radius" name="Minimum labeling radius" runtime="false" value="4" visible="true"/>
+<variable ID="Labeling radius scale" name="Labeling radius scale" runtime="false" value="3.5" visible="true"/>
+<variable ID="Show Result Sequences" name="Show Result Sequences" runtime="false" value="false" visible="true"/>
+</input>
+<output>
+<variable ID="Network Skeleton" name="Network Skeleton" runtime="false" visible="true"/>
+<variable ID="Network Branch Points" name="Network Branch Points" runtime="false" visible="true"/>
+<variable ID="Network End Points" name="Network End Points" runtime="false" visible="true"/>
+<variable ID="Network Labels" name="Network Labels" runtime="false" visible="true"/>
+<variable ID="Network Labeled Skeleton" name="Network Labeled Skeleton" runtime="false" visible="true"/>
+<variable ID="Network Graph Description" name="Network Graph Description" runtime="false" visible="true"/>
+<variable ID="Seeds" name="Seeds" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="1666674746" blockType="plugins.danyfel80.topologicalnetworkdescription.specific.NetworkDescriptionReportPlugin" className="plugins.danyfel80.topologicalnetworkdescription.specific.NetworkDescriptionReportPlugin" collapsed="false" definedName="Network description report" height="105" keepsResults="true" width="333" xLocation="680" yLocation="14">
+<variables>
+<input>
+<variable ID="Graph description" name="Graph description" runtime="false" visible="true"/>
+<variable ID="Minimum spanning forest" name="Minimum spanning forest" runtime="false" visible="true"/>
+<variable ID="Seed points" name="Seed points" runtime="false" visible="true"/>
+</input>
+<output>
+<variable ID="Report" name="Report" runtime="false" visible="true"/>
+</output>
+</variables>
+</block>
+<block ID="1589480814" blockType="plugins.adufour.blocks.tools.io.WorkbookToFile" className="plugins.adufour.blocks.tools.io.WorkbookToFile" collapsed="false" definedName="Workbook to file" height="402" keepsResults="true" width="499" xLocation="1102" yLocation="56">
+<variables>
+<input>
+<variable ID="workbook" name="workbook" runtime="false" visible="true"/>
+<variable ID="file format" name="file format" runtime="false" value="Spreadsheet" visible="true"/>
+<variable ID="output file" name="output file" runtime="false" visible="true"/>
+<variable ID="If file exists" name="If file exists" runtime="false" value="Overwrite" visible="true"/>
+</input>
+<output/>
+</variables>
+</block>
+</blocks>
+<links>
+<link dstBlockID="2047426829" dstVarID="Sequence with seeds(ROIs)" srcBlockID="2008441520" srcVarID="Sequence with seeds(ROIs)"/>
+<link dstBlockID="1893728517" dstVarID="Sequence with seeds(ROIs)" srcBlockID="2008441520" srcVarID="Sequence with seeds(ROIs)"/>
+<link dstBlockID="1010881022" dstVarID="Segmented Sequence" srcBlockID="2008441520" srcVarID="Segmented Sequence"/>
+<link dstBlockID="2047426829" dstVarID="Inverted Distance Map" srcBlockID="1010881022" srcVarID="Inverted Squared Distance Map"/>
+<link dstBlockID="1348112690" dstVarID="Squared Distance Map" srcBlockID="1010881022" srcVarID="Squared Distance Map"/>
+<link dstBlockID="1893728517" dstVarID="Squared Distance Map" srcBlockID="1010881022" srcVarID="Squared Distance Map"/>
+<link dstBlockID="1348112690" dstVarID="Cost To Seed" srcBlockID="2047426829" srcVarID="Cost To Seed"/>
+<link dstBlockID="1893728517" dstVarID="Minimum Spanning Tree" srcBlockID="2047426829" srcVarID="Minimum Spanning Tree"/>
+<link dstBlockID="1893728517" dstVarID="Endness Map" srcBlockID="1348112690" srcVarID="Endness Map"/>
+<link dstBlockID="1666674746" dstVarID="Minimum spanning forest" srcBlockID="1893728517" srcVarID="Minimum Spanning Tree"/>
+<link dstBlockID="1666674746" dstVarID="Graph description" srcBlockID="1893728517" srcVarID="Network Graph Description"/>
+<link dstBlockID="1666674746" dstVarID="Seed points" srcBlockID="1893728517" srcVarID="Seeds"/>
+<link dstBlockID="1589480814" dstVarID="workbook" srcBlockID="1666674746" srcVarID="Report"/>
+<link dstBlockID="2008441520" dstVarID="Thresholded Sequence" srcBlockID="527278744" srcVarID="Thresholded Sequence"/>
+</links>
+</protocol>
