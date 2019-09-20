@@ -23,7 +23,6 @@ import java.util.List;
 import javax.vecmath.Point3d;
 
 import icy.plugin.abstract_.PluginActionable;
-import icy.roi.ROI;
 import icy.roi.ROI2D;
 import icy.type.point.Point5D;
 import plugins.adufour.blocks.lang.Block;
@@ -75,7 +74,7 @@ public class FilterROI2DPointsWithDistanceMap extends PluginActionable implement
 			throw new IllegalArgumentException("null distance map.");
 		}
 
-		List<ROI> rois = annotatedSequence.getValue().getROIs(ROI2D.class);
+		List<ROI2D> rois = annotatedSequence.getValue().getROIs(ROI2D.class, false);
 		for (int i = 0; i < rois.size() - 1; i++) {
 			Point5D point5dI = ((ROI2D) rois.get(i)).getPosition5D();
 			Point3d point3dI = new Point3d(point5dI.getX(), point5dI.getY(), point5dI.getZ());
